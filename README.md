@@ -40,7 +40,6 @@ Dibangun dengan arsitektur modern berbasis **Laravel 12** sebagai *backend RESTf
 - Penanda waktu sholat berikutnya (*next prayer countdown*) secara akurat.
 
 ### 3. 👥 Multi-Role & Hak Akses Bertingkat
-- **Super Admin**: Hak akses penuh mencakup manajemen pengguna, kategori, berita, dan konfigurasi sistem.
 - **Admin**: Pengelolaan berita, media, dan kategori persyarikatan.
 - **Tim Redaksi**: Penyusunan dan penulisan draf artikel kegiatan persyarikatan.
 
