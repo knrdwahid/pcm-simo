@@ -93,9 +93,9 @@ onUnmounted(() => {
 
                     <span class="topbar-sep">|</span>
 
-                    <Link href="/dashboard/login" class="topbar-admin-link">
-                        <v-icon size="13" class="mr-1">mdi-lock-outline</v-icon>
-                        <span>Portal Pengurus</span>
+                    <Link :href="$page.props.auth?.user ? '/dashboard' : '/dashboard/login'" class="topbar-admin-link">
+                        <v-icon size="13" class="mr-1">{{ $page.props.auth?.user ? 'mdi-view-dashboard-outline' : 'mdi-lock-outline' }}</v-icon>
+                        <span>{{ $page.props.auth?.user ? 'Dashboard (' + $page.props.auth.user.name + ')' : 'Portal Pengurus' }}</span>
                     </Link>
                 </div>
             </div>
@@ -195,7 +195,11 @@ onUnmounted(() => {
                         <li><a href="#amal-usaha" class="mobile-nav-link" @click="mobileMenuOpen = false">AMAL USAHA</a></li>
                         <li><a href="#agenda" class="mobile-nav-link" @click="mobileMenuOpen = false">AGENDA</a></li>
                         <li><a href="#layanan" class="mobile-nav-link" @click="mobileMenuOpen = false">LAYANAN</a></li>
-                        <li><Link href="/dashboard/login" class="mobile-nav-link mobile-nav-admin" @click="mobileMenuOpen = false">PORTAL PENGURUS</Link></li>
+                        <li>
+                            <Link :href="$page.props.auth?.user ? '/dashboard' : '/dashboard/login'" class="mobile-nav-link mobile-nav-admin" @click="mobileMenuOpen = false">
+                                {{ $page.props.auth?.user ? 'DASHBOARD PENGURUS' : 'PORTAL PENGURUS' }}
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </transition>
