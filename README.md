@@ -1,59 +1,158 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+  <img src="public/images/logo-pcmsimo-warna.png" alt="Logo PCM Simo" width="220">
 
-## About Laravel
+  # Portal & CMS Pimpinan Cabang Muhammadiyah Simo
+  
+  **Sistem Informasi & Content Management System (CMS) Resmi PCM Simo, Boyolali, Jawa Tengah**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+  <p align="center">
+    <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 12">
+    <img src="https://img.shields.io/badge/Inertia.js-v2-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js">
+    <img src="https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue 3">
+    <img src="https://img.shields.io/badge/Vuetify-3.x-1867C0?style=for-the-badge&logo=vuetify&logoColor=white" alt="Vuetify 3">
+    <img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2+">
+  </p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📖 Tentang Project
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Aplikasi ini merupakan portal resmi dan sistem pengelolaan konten (CMS) untuk **Pimpinan Cabang Muhammadiyah (PCM) Simo**, Kabupaten Boyolali. Dikembangkan untuk mempublikasikan syiar dakwah, berita kegiatan persyarikatan, profil majelis/lembaga, amal usaha (AUM), serta menyediakan layanan informasi jadwal sholat secara *real-time* kepada masyarakat.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Dibangun dengan arsitektur modern berbasis **Laravel 12** sebagai *backend RESTful/Inertia controller* dan **Vue 3 + Vuetify 3** melalui **Inertia.js**, memberikan pengalaman pengguna aplikasi satu halaman (SPA) yang cepat, interaktif, dan responsif.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## ✨ Fitur Unggulan
 
-### Premium Partners
+### 1. 📰 Manajemen Berita & Konten Publikasi
+- **TipTap Rich Text Editor**: Editor penulisan artikel interaktif dengan dukungan pemformatan lengkap.
+- **WebP Image Converter**: Unggahan gambar otomatis dioptimasi dan dikonversi ke format WebP untuk kecepatan loading maksimal.
+- **Kategori & Label Berita**: Pengelompokan artikel berbasis kategori dengan penanda warna (*hex color validation*).
+- **Auto-Generated Safe Slug**: Pembuatan tautan URL ramah SEO yang unik dan mencegah tabrakan (*collision-free*).
+- **Halaman Detail Interaktif**: Dilengkapi dengan estimasi waktu baca, navigasi artikel terkait, dan tombol bagikan.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. 🕌 Integrasi Jadwal Sholat Real-Time
+- Sinkronisasi otomatis data waktu sholat harian untuk wilayah Simo dan sekitarnya menggunakan **API Hisabmu**.
+- Penanda waktu sholat berikutnya (*next prayer countdown*) secara akurat.
 
-## Contributing
+### 3. 👥 Multi-Role & Hak Akses Bertingkat
+- **Super Admin**: Hak akses penuh mencakup manajemen pengguna, kategori, berita, dan konfigurasi sistem.
+- **Admin**: Pengelolaan berita, media, dan kategori persyarikatan.
+- **Tim Redaksi**: Penyusunan dan penulisan draf artikel kegiatan persyarikatan.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. 🛡️ Keamanan & Optimasi
+- **HTML Sanitization**: Pembersihan konten dari potensi serangan Stored XSS menggunakan whitelist tag terverifikasi.
+- **Path Traversal Protection**: Validasi ketat pada sistem upload dan penghapusan berkas media.
+- **Strong Password Policy**: Validasi kata sandi dengan standar kompleksitas minimal 8 karakter, huruf besar/kecil, dan angka.
+- **Custom Security Headers**: Dilengkapi middleware proteksi Content Security Policy (CSP), X-Frame-Options, dan anti-sniffing.
+- **Rate Limiting**: Pencegahan serangan *brute force* pada rute autentikasi/login.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🛠️ Tech Stack
 
-## Security Vulnerabilities
+- **Backend Framework**: [Laravel 12](https://laravel.com)
+- **Frontend Adapter**: [Inertia.js v2](https://inertiajs.com)
+- **Frontend Framework**: [Vue.js 3](https://vuejs.org) (Composition API & `<script setup>`)
+- **UI Component Library**: [Vuetify 3](https://vuetifyjs.com) + [Material Design Icons (MDI)](https://pictogrammers.com/library/mdi/)
+- **Rich Text Editor**: [TipTap Editor](https://tiptap.dev)
+- **Alert & Notifikasi**: [SweetAlert2](https://sweetalert2.github.io)
+- **Database**: MySQL / MariaDB / SQLite
+- **Build Tool**: [Vite](https://vitejs.dev)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🚀 Panduan Instalasi Lokal (Development)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Prasyarat
+- PHP >= 8.2 (ekstensi aktif: `pdo`, `mbstring`, `openssl`, `gd` / `imagick`)
+- Composer >= 2.x
+- Node.js >= 18.x & NPM
+- Web Server lokal (Laragon / XAMPP)
+
+### Langkah-langkah
+
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/knrdwahid/pcm-simo.git
+   cd pcm-simo
+   ```
+
+2. **Install dependensi PHP**:
+   ```bash
+   composer install
+   ```
+
+3. **Install dependensi JavaScript**:
+   ```bash
+   npm install
+   ```
+
+4. **Konfigurasi Environment**:
+   Salin file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   Buka file `.env` dan sesuaikan konfigurasi database Anda.
+
+5. **Generate Application Key**:
+   ```bash
+   php artisan key:generate
+   ```
+
+6. **Migrasi Database & Seed Data Awal**:
+   ```bash
+   php artisan migrate --seed
+   ```
+   *(Opsional: Password default seeder dapat diatur melalui variabel `SEED_SUPERADMIN_PASSWORD`, `SEED_ADMIN_PASSWORD`, dan `SEED_TIM_PASSWORD` di `.env`)*
+
+7. **Buat Symlink Storage**:
+   ```bash
+   php artisan storage:link
+   ```
+
+8. **Jalankan Development Server**:
+   Buka dua jendela terminal terpisah:
+   ```bash
+   # Terminal 1: Backend Laravel
+   php artisan serve
+
+   # Terminal 2: Frontend Vite
+   npm run dev
+   ```
+   Aplikasi dapat diakses melalui browser di `http://127.0.0.1:8000` atau domain virtual host lokal Anda.
+
+---
+
+## 📦 Panduan Build & Deployment (Hosting / cPanel / hPanel)
+
+1. **Compile Asset Frontend**:
+   Jalankan build sebelum upload ke server:
+   ```bash
+   npm run build
+   ```
+   Folder `public/build/` akan otomatis terisi bundle JavaScript & CSS yang telah diminifikasi.
+
+2. **Optimasi Cache Laravel di Server**:
+   ```bash
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+
+3. **Symlink Storage Publik**:
+   Pastikan folder `public/storage` terhubung ke `storage/app/public`:
+   ```bash
+   php artisan storage:link
+   ```
+
+---
+
+## 📄 Lisensi & Hak Cipta
+
+Dikembangkan untuk **Pimpinan Cabang Muhammadiyah Simo**, Boyolali.  
+Hak Cipta dilindungi. Kode sumber ini dapat digunakan dan dikembangkan untuk kemaslahatan dakwah persyarikatan.
