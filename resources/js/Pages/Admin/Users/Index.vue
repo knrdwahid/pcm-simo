@@ -26,7 +26,7 @@ const form = useForm({
     password: '',
 });
 
-// Hanya peran Admin dan Tim Redaksi yang dapat dipilih atau dibuat
+// Role options dasar
 const roleOptions = [
     {
         value: 'tim',
@@ -42,6 +42,20 @@ const roleOptions = [
     },
 ];
 
+const isSuperAdmin = computed(() => currentUser.value?.role === 'superadmin');
+
+// Super Admin dapat memilih Admin atau Tim; Admin biasa hanya berhak memilih Tim Redaksi
+const availableRoleOptions = computed(() => {
+    return isSuperAdmin.value ? roleOptions : roleOptions.filter(r => r.value === 'tim');
+});
+
+// Admin biasa hanya bisa mengelola akun dengan role 'tim'
+const canManage = (targetUser) => {
+    if (!targetUser) return false;
+    if (isSuperAdmin.value) return true;
+    return targetUser.role === 'tim';
+};
+
 const openCreate = () => {
     isEdit.value = false;
     selectedUser.value = null;
@@ -53,6 +67,10 @@ const openCreate = () => {
 };
 
 const openEdit = (user) => {
+    if (!canManage(user)) {
+        showAlert.warning('Akses Dibatasi', 'Hanya Super Admin yang berwenang mengubah data akun Admin.');
+        return;
+    }
     isEdit.value = true;
     selectedUser.value = user;
     form.reset();
@@ -86,6 +104,11 @@ const submit = () => {
 const deleteUser = async (user) => {
     if (user.id === currentUser.value.id) {
         showAlert.warning('Tidak Diizinkan', 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif digunakan.');
+        return;
+    }
+
+    if (!canManage(user)) {
+        showAlert.warning('Akses Dibatasi', 'Hanya Super Admin yang berwenang menghapus akun Admin.');
         return;
     }
 
@@ -230,18 +253,19 @@ const formatDate = (dateString) => {
                                     <button
                                         type="button"
                                         class="action-btn action-btn--edit"
-                                        title="Sunting Data Pengguna"
+                                        :disabled="!canManage(u)"
+                                        :title="!canManage(u) ? 'Hanya Super Admin yang berwenang mengubah akun Admin' : 'Sunting Data Pengguna'"
                                         @click="openEdit(u)"
                                     >
                                         <v-icon size="16">mdi-pencil-outline</v-icon>
                                     </button>
 
-                                    <!-- Delete Button (Disabled for self) -->
+                                    <!-- Delete Button (Disabled for self or non-superadmin deleting admin) -->
                                     <button
                                         type="button"
                                         class="action-btn action-btn--delete"
-                                        :disabled="u.id === currentUser.id"
-                                        :title="u.id === currentUser.id ? 'Tidak bisa menghapus akun Anda sendiri' : 'Hapus Akun Pengguna'"
+                                        :disabled="u.id === currentUser.id || !canManage(u)"
+                                        :title="u.id === currentUser.id ? 'Tidak bisa menghapus akun Anda sendiri' : (!canManage(u) ? 'Hanya Super Admin yang berwenang menghapus akun Admin' : 'Hapus Akun Pengguna')"
                                         @click="deleteUser(u)"
                                     >
                                         <v-icon size="16">mdi-trash-can-outline</v-icon>
@@ -343,9 +367,12 @@ const formatDate = (dateString) => {
                         <label class="input-label">
                             Peran / Hak Akses (Role) <span class="text-rose-500">*</span>
                         </label>
+                        <p v-if="!isSuperAdmin" class="text-xs text-amber-700 bg-amber-50 rounded px-2.5 py-1.5 mb-2 border border-amber-200">
+                            Sebagai Admin, Anda hanya berwenang menambahkan/mengelola pengguna dengan peran <strong>Tim Redaksi</strong>.
+                        </p>
                         <div class="role-selector-grid">
                             <div
-                                v-for="opt in roleOptions"
+                                v-for="opt in availableRoleOptions"
                                 :key="opt.value"
                                 :class="['role-option-card', { 'role-option-card--active': form.role === opt.value }]"
                                 @click="form.role = opt.value"

@@ -51,17 +51,23 @@ class UserController extends Controller
 
     /**
      * Store a newly created user in storage.
-     * Hanya boleh membuat role 'admin' atau 'tim'. Superadmin tidak bisa dibuat dari dashboard.
+     * Super Admin dapat membuat 'admin' atau 'tim'.
+     * Admin biasa hanya diizinkan membuat 'tim'.
      */
     public function store(Request $request): RedirectResponse
     {
+        $currentUser = $request->user();
+        $allowedRoles = $currentUser->role === 'superadmin' ? 'admin,tim' : 'tim';
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:150', 'unique:users,email'],
-            'role' => ['required', 'string', 'in:admin,tim'],
+            'role' => ['required', 'string', "in:$allowedRoles"],
             'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()],
         ], [
-            'role.in' => 'Peran pengguna hanya dapat dipilih sebagai Admin atau Tim Redaksi.',
+            'role.in' => $currentUser->role === 'superadmin'
+                ? 'Peran pengguna hanya dapat dipilih sebagai Admin atau Tim Redaksi.'
+                : 'Akun Admin hanya berwenang menambahkan pengguna dengan peran Tim Redaksi.',
             'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
             'password.min' => 'Password minimal 8 karakter dengan huruf besar, kecil, dan angka.',
         ]);
@@ -79,21 +85,33 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      * Akun superadmin tidak dapat diubah oleh siapapun melalui dashboard.
+     * Admin biasa tidak dapat mengubah akun sesama Admin.
      */
     public function update(Request $request, User $user): RedirectResponse
     {
+        $currentUser = $request->user();
+
         // Proteksi absolut: Akun Super Admin tidak bisa diubah apapun
         if ($user->role === 'superadmin') {
             return back()->with('error', 'Akun Super Admin adalah otoritas tertinggi sistem dan tidak dapat diubah.');
         }
 
+        // Admin biasa tidak boleh mengubah data akun Admin lain
+        if ($currentUser->role !== 'superadmin' && $user->role === 'admin') {
+            return back()->with('error', 'Hanya Super Admin yang berwenang mengubah data akun Admin.');
+        }
+
+        $allowedRoles = $currentUser->role === 'superadmin' ? 'admin,tim' : 'tim';
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:150', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', 'string', 'in:admin,tim'],
+            'role' => ['required', 'string', "in:$allowedRoles"],
             'password' => ['nullable', 'string', Password::min(8)->mixedCase()->numbers()],
         ], [
-            'role.in' => 'Peran pengguna hanya dapat dipilih sebagai Admin atau Tim Redaksi.',
+            'role.in' => $currentUser->role === 'superadmin'
+                ? 'Peran pengguna hanya dapat dipilih sebagai Admin atau Tim Redaksi.'
+                : 'Akun Admin hanya berwenang mengelola pengguna dengan peran Tim Redaksi.',
             'email.unique' => 'Email ini sudah digunakan oleh akun lain.',
             'password.min' => 'Password minimal 8 karakter dengan huruf besar, kecil, dan angka.',
         ]);
@@ -114,6 +132,7 @@ class UserController extends Controller
     /**
      * Remove the specified user from storage.
      * Akun superadmin tidak dapat dihapus oleh siapapun melalui dashboard.
+     * Admin biasa tidak dapat menghapus akun sesama Admin.
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
@@ -122,6 +141,11 @@ class UserController extends Controller
         // Proteksi absolut: Akun Super Admin tidak dapat dihapus
         if ($user->role === 'superadmin') {
             return back()->with('error', 'Akun Super Admin adalah otoritas tertinggi sistem dan tidak dapat dihapus.');
+        }
+
+        // Admin biasa tidak boleh menghapus akun sesama Admin
+        if ($currentUser->role !== 'superadmin' && $user->role === 'admin') {
+            return back()->with('error', 'Hanya Super Admin yang berwenang menghapus akun Admin.');
         }
 
         // Cegah menghapus akun sendiri yang sedang aktif
