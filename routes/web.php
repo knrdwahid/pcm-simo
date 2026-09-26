@@ -1,0 +1,53 @@
+<?php
+
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PublicController;
+use Illuminate\Support\Facades\Route;
+
+// Public Routes
+Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/berita/{slug}', [PublicController::class, 'showArticle'])->name('article.show');
+
+// Admin Guest Routes
+Route::middleware('guest')->prefix('dashboard')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login');
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('admin.login.store');
+});
+
+// Admin Protected Routes
+Route::middleware('auth')->prefix('dashboard')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+
+    // News Management
+    Route::get('/news', [NewsController::class, 'index'])->name('admin.news.index');
+    Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
+    Route::post('/news', [NewsController::class, 'store'])->name('admin.news.store');
+    Route::get('/news/{news}/edit', [NewsController::class, 'edit'])->name('admin.news.edit');
+    Route::put('/news/{news}', [NewsController::class, 'update'])->name('admin.news.update');
+    Route::delete('/news/{news}', [NewsController::class, 'destroy'])->name('admin.news.destroy');
+    Route::patch('/news/{news}/toggle-publish', [NewsController::class, 'togglePublish'])->name('admin.news.toggle');
+    Route::post('/news/upload-image', [NewsController::class, 'uploadContentImage'])->name('admin.news.upload-image');
+
+    // Categories Management
+    Route::get('/categories', [CategoryController::class, 'index'])->name('admin.categories.index');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('admin.categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+
+    // User & Account Management (Super Admin & Admin Only)
+    Route::middleware('role:superadmin,admin')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    });
+});
+

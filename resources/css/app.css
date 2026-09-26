@@ -1,0 +1,144 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Base Body Styles */
+body {
+    font-family: 'Plus Jakarta Sans', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em;
+}
+
+/* Ensure clean form controls even when OS is in dark mode */
+input, textarea, select, button {
+    color-scheme: light;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Font Utilities */
+.font-poppins {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* NProgress Top Loading Bar Styling */
+#nprogress {
+    pointer-events: none;
+}
+
+#nprogress .bar {
+    background: #10b981 !important; /* Emerald 500 */
+    position: fixed;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px !important;
+}
+
+#nprogress .peg {
+    display: block;
+    position: absolute;
+    right: 0px;
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 10px #10b981, 0 0 5px #10b981;
+    opacity: 1;
+    transform: rotate(3deg) translate(0px, -4px);
+}
+
+/* Soft utilities */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── SweetAlert2 Premium Theme for PCM Simo ── */
+.swal2-pcm-popup {
+    border-radius: 20px !important;
+    padding: 24px 28px !important;
+    background: #ffffff !important;
+    box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.2) !important;
+    border: 1px solid #e2e8f0 !important;
+    font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif !important;
+}
+
+.swal2-pcm-title {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin-bottom: 8px !important;
+}
+
+.swal2-pcm-html {
+    font-size: 13.5px !important;
+    color: #475569 !important;
+    line-height: 1.6 !important;
+    margin: 8px 0 16px 0 !important;
+}
+
+.swal2-pcm-confirm {
+    background: #006837 !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 10px 22px !important;
+    border-radius: 10px !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 3px 10px rgba(0, 104, 55, 0.25) !important;
+    margin: 0 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+.swal2-pcm-confirm:hover {
+    background: #00502b !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 5px 14px rgba(0, 104, 55, 0.35) !important;
+}
+
+.swal2-pcm-cancel {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    border: 1px solid #e2e8f0 !important;
+    cursor: pointer !important;
+    margin: 0 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+.swal2-pcm-cancel:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}

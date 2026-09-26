@@ -1,0 +1,210 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Article;
+use App\Models\Aum;
+use App\Models\Category;
+use App\Models\Official;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class PublicController extends Controller
+{
+    // Koordinat Simo, Boyolali
+    private const SIMO_LAT = -7.4625;
+    private const SIMO_LON = 110.6783;
+    private const SIMO_ELEV = 200;
+    private const TIMEZONE = 7;
+    private const IHTIYAT = 2; // menit ihtiyat sesuai Muhammadiyah
+
+    /**
+     * Ambil jadwal shalat dari Hisabmu.org (KHGT Muhammadiyah)
+     * Dengan caching 6 jam dan fallback ke data statis
+     */
+    private function getPrayerSchedule(): array
+    {
+        $today = now()->timezone('Asia/Jakarta')->format('Y-m-d');
+        $cacheKey = "prayer_schedule_{$today}";
+
+        return Cache::remember($cacheKey, 6 * 60 * 60, function () use ($today) {
+            try {
+                $response = Http::timeout(10)->get('https://hisabmu.org/api/jadwal-sholat', [
+                    'date' => $today,
+                    'lat' => self::SIMO_LAT,
+                    'lon' => self::SIMO_LON,
+                    'tz' => self::TIMEZONE,
+                    'elev' => self::SIMO_ELEV,
+                    'ihtiyat' => self::IHTIYAT,
+                    'accuracy' => 'menit',
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $times = $data['times'] ?? [];
+
+                    return [
+                        'source' => 'hisabmu',
+                        'date' => $today,
+                        'times' => [
+                            ['name' => 'Subuh',   'time' => $times['subuh'] ?? '04:18',   'icon' => 'mdi-weather-sunset-up'],
+                            ['name' => 'Syuruq',  'time' => $times['syuruq'] ?? '05:23',  'icon' => 'mdi-weather-sunny'],
+                            ['name' => 'Dzuhur',  'time' => $times['zuhur'] ?? '11:33',   'icon' => 'mdi-white-balance-sunny'],
+                            ['name' => 'Ashar',   'time' => $times['asar'] ?? '14:45',    'icon' => 'mdi-weather-sunny-alert'],
+                            ['name' => 'Maghrib', 'time' => $times['maghrib'] ?? '17:37', 'icon' => 'mdi-weather-sunset-down'],
+                            ['name' => 'Isya',    'time' => $times['isya'] ?? '18:47',    'icon' => 'mdi-weather-night'],
+                        ],
+                    ];
+                }
+            } catch (\Exception $e) {
+                Log::warning('Hisabmu API failed: ' . $e->getMessage());
+            }
+
+            // Fallback statis jika API gagal
+            return $this->getStaticPrayerSchedule($today);
+        });
+    }
+
+    /**
+     * Fallback data statis jika API Hisabmu gagal
+     */
+    private function getStaticPrayerSchedule(string $date): array
+    {
+        return [
+            'source' => 'static',
+            'date' => $date,
+            'times' => [
+                ['name' => 'Subuh',   'time' => '04:18', 'icon' => 'mdi-weather-sunset-up'],
+                ['name' => 'Syuruq',  'time' => '05:23', 'icon' => 'mdi-weather-sunny'],
+                ['name' => 'Dzuhur',  'time' => '11:33', 'icon' => 'mdi-white-balance-sunny'],
+                ['name' => 'Ashar',   'time' => '14:45', 'icon' => 'mdi-weather-sunny-alert'],
+                ['name' => 'Maghrib', 'time' => '17:37', 'icon' => 'mdi-weather-sunset-down'],
+                ['name' => 'Isya',    'time' => '18:47', 'icon' => 'mdi-weather-night'],
+            ],
+        ];
+    }
+
+    public function index(Request $request): Response
+    {
+        $selectedCategory = $request->query('kategori');
+        $search = $request->query('cari');
+
+        $articlesQuery = Article::with('category')
+            ->where('status', 'published')
+            ->latest('published_at');
+
+        if ($selectedCategory && $selectedCategory !== 'semua') {
+            $articlesQuery->whereHas('category', function ($q) use ($selectedCategory) {
+                $q->where('slug', $selectedCategory);
+            });
+        }
+
+        if ($search) {
+            $search = str_replace(['%', '_'], ['\\%', '\\_'], $search);
+            $articlesQuery->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        $articles = $articlesQuery->get();
+
+        $featuredArticles = Article::with('category')
+            ->where('status', 'published')
+            ->where('is_featured', true)
+            ->latest('published_at')
+            ->take(4)
+            ->get();
+
+        if ($featuredArticles->isEmpty()) {
+            $featuredArticles = $articles->take(3);
+        }
+
+        $categories = Category::withCount(['articles' => function ($q) {
+            $q->where('status', 'published');
+        }])->get();
+
+        $officials = Official::orderBy('sort_order')->get();
+        $aums = Aum::all();
+
+        // Jadwal Shalat KHGT Muhammadiyah via Hisabmu API
+        $prayerData = $this->getPrayerSchedule();
+
+        return Inertia::render('Welcome', [
+            'appName' => 'PCM Simo',
+            'articles' => $articles,
+            'featuredArticles' => $featuredArticles,
+            'categories' => $categories,
+            'officials' => $officials,
+            'aums' => $aums,
+            'prayerSchedule' => $prayerData['times'],
+            'prayerSource' => $prayerData['source'],
+            'prayerDate' => $prayerData['date'],
+            'filters' => [
+                'kategori' => $selectedCategory ?? 'semua',
+                'cari' => $search ?? '',
+            ],
+        ]);
+    }
+
+    public function showArticle(string $slug): Response
+    {
+        $article = Article::with(['category', 'user'])
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        // Increment views (session-protected to prevent manipulation)
+        $viewedKey = 'viewed_article_' . $article->id;
+        if (!session()->has($viewedKey)) {
+            $article->increment('views');
+            session()->put($viewedKey, true);
+        }
+
+        $relatedArticles = Article::with('category')
+            ->where('status', 'published')
+            ->where('id', '!=', $article->id)
+            ->where('category_id', $article->category_id)
+            ->latest('published_at')
+            ->take(4)
+            ->get();
+
+        if ($relatedArticles->isEmpty()) {
+            $relatedArticles = Article::with('category')
+                ->where('status', 'published')
+                ->where('id', '!=', $article->id)
+                ->latest('published_at')
+                ->take(4)
+                ->get();
+        }
+
+        $popularArticles = Article::with('category')
+            ->where('status', 'published')
+            ->where('id', '!=', $article->id)
+            ->orderByDesc('views')
+            ->take(5)
+            ->get();
+
+        $categories = Category::withCount(['articles' => function ($q) {
+            $q->where('status', 'published');
+        }])->get();
+
+        // Jadwal Shalat KHGT Muhammadiyah via Hisabmu API
+        $prayerData = $this->getPrayerSchedule();
+
+        return Inertia::render('ArticleDetail', [
+            'article' => $article,
+            'relatedArticles' => $relatedArticles,
+            'popularArticles' => $popularArticles,
+            'categories' => $categories,
+            'prayerSchedule' => $prayerData['times'],
+            'prayerSource' => $prayerData['source'],
+            'prayerDate' => $prayerData['date'],
+        ]);
+    }
+}
