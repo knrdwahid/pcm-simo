@@ -1,0 +1,135 @@
+name: Deploy PCM Simo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pcm-simo-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      APP_DIR: /home/u229016369/domains/muhammadiyahsimo.or.id/backend-pcmsimo
+
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Siapkan Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Build frontend
+        run: |
+          npm ci
+          npm run build
+          test -f public/build/manifest.json
+          rm -f public/hot
+
+      - name: Siapkan SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+          cat > ~/.ssh/config <<EOF
+          Host production
+            HostName $SSH_HOST
+            Port $SSH_PORT
+            User $SSH_USER
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Periksa server dan backup aplikasi
+        run: |
+          ssh production 'bash -se' <<'REMOTE'
+          APP_DIR=/home/u229016369/domains/muhammadiyahsimo.or.id/backend-pcmsimo
+          DOMAIN_DIR=/home/u229016369/domains/muhammadiyahsimo.or.id
+
+          test -f "$APP_DIR/.env"
+          test -f "$APP_DIR/artisan"
+          test -L "$DOMAIN_DIR/public_html"
+          test "$(readlink -f "$DOMAIN_DIR/public_html")" = "$APP_DIR/public"
+
+          command -v rsync
+          command -v composer2
+
+          BACKUP_DIR="$HOME/deploy-backups/pcmsimo"
+          mkdir -p "$BACKUP_DIR"
+          chmod 700 "$BACKUP_DIR"
+          umask 077
+
+          tar --exclude='./.git' \
+              --exclude='./node_modules' \
+              --exclude='./storage/logs' \
+              --exclude='./storage/framework/cache' \
+              --exclude='./storage/framework/sessions' \
+              --exclude='./storage/framework/views' \
+              -czf "$BACKUP_DIR/app-$(date -u +%Y%m%dT%H%M%SZ).tar.gz" \
+              -C "$APP_DIR" .
+
+          cd "$APP_DIR"
+          php artisan down --retry=60
+          REMOTE
+
+      - name: Kirim kode dan hasil build
+        run: |
+          rsync -az --omit-dir-times \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/node_modules/' \
+            --exclude='/vendor/' \
+            --exclude='/.env*' \
+            --exclude='/storage/' \
+            --exclude='/bootstrap/cache/' \
+            --exclude='/public/storage' \
+            --exclude='/public/uploads/' \
+            --exclude='/public/hot' \
+            --exclude='/hot.local.backup' \
+            --exclude='/database/*.sqlite*' \
+            ./ "production:$APP_DIR/"
+
+      - name: Siapkan Laravel dan buka website
+        run: |
+          ssh production 'bash -se' <<'REMOTE'
+          cd /home/u229016369/domains/muhammadiyahsimo.or.id/backend-pcmsimo
+
+          rm -f public/hot
+          composer2 install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+          composer2 check-platform-reqs --no-dev
+
+          php artisan config:clear
+          php artisan route:clear
+          php artisan view:clear
+          php artisan config:cache
+          php artisan view:cache
+
+          test -f public/build/manifest.json
+          php artisan up
+          REMOTE
+
+      - name: Hapus private key dari runner
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
