@@ -192,54 +192,76 @@ class ContentSeeder extends Seeder
             Article::updateOrCreate(['slug' => $art['slug']], $art);
         }
 
-        // 3. Officials (Pimpinan Cabang Muhammadiyah Simo Periode 2022 - 2027)
+        // 3. Officials (Pimpinan Cabang Muhammadiyah Simo Periode 2023 - 2028 - SK PDM Boyolali No. 100/KEP/III.0/D/2023)
+        Official::truncate();
         $officials = [
             [
-                'name' => 'H. Sholikin, S.Pd.',
-                'position' => 'Ketua Pimpinan Cabang',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+                'name' => 'H. Sholihin, S.Pd',
+                'position' => 'Ketua PCM Simo',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 1,
             ],
             [
-                'name' => 'H. Ahmad Fauzi, S.Pd.I.',
-                'position' => 'Wakil Ketua Bidang Tabligh & Tarjih',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+                'name' => 'Sayyaf, S.PdI',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 2,
             ],
             [
-                'name' => 'Bambang Sugiarto, S.Pd., M.Pd.',
-                'position' => 'Sekretaris PCM Simo',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
+                'name' => 'Syarif Widodo, M.PdI',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 3,
             ],
             [
-                'name' => 'H. Joko Prasetyo, S.E.',
-                'position' => 'Bendahara PCM Simo',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+                'name' => 'Drs. Mukridin',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 4,
             ],
             [
-                'name' => 'Ir. Muhammad Arifin',
-                'position' => 'Ketua Majelis Dikdasmen & PNF',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
+                'name' => 'Drs. Qomarudin',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 5,
             ],
             [
-                'name' => 'dr. H. Wahyu Hidayat',
-                'position' => 'Ketua Majelis Pembina Kesehatan Umum (MPKU)',
-                'period' => '2022 - 2027',
-                'image_url' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+                'name' => 'Mushowir, S.Ag., S.Kom',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
                 'sort_order' => 6,
+            ],
+            [
+                'name' => 'Suryani, S.Si., S.H',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 7,
+            ],
+            [
+                'name' => 'H. Suyono, S.H',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 8,
+            ],
+            [
+                'name' => 'Drs. Suramto, M.Pd',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 9,
             ],
         ];
 
         foreach ($officials as $off) {
-            Official::updateOrCreate(['name' => $off['name']], $off);
+            Official::create($off);
         }
 
         // 4. Amal Usaha Muhammadiyah (AUM) Simo

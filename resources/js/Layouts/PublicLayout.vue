@@ -119,7 +119,7 @@ onUnmounted(() => {
                 <nav class="header-nav-green">
                     <ul class="nav-menu">
                         <li class="nav-item">
-                            <Link href="/" class="nav-link nav-link--active">BERANDA</Link>
+                            <Link href="/" class="nav-link" :class="{ 'nav-link--active': $page.component === 'Welcome' }">BERANDA</Link>
                         </li>
 
                         <!-- Organisasi Dropdown -->
@@ -128,17 +128,19 @@ onUnmounted(() => {
                             @mouseenter="organisasiDropdownOpen = true"
                             @mouseleave="organisasiDropdownOpen = false"
                         >
-                            <a href="#organisasi" class="nav-link" @click.prevent>
+                            <Link href="/profil-organisasi" class="nav-link" :class="{ 'nav-link--active': $page.component === 'OrganizationProfile' }">
                                 <span>ORGANISASI</span>
                                 <v-icon size="14" class="ml-0.5">mdi-chevron-down</v-icon>
-                            </a>
+                            </Link>
                             <!-- Dropdown Menu -->
                             <transition name="fade">
                                 <ul v-if="organisasiDropdownOpen" class="dropdown-menu">
-                                    <li><a href="#pimpinan" class="dropdown-link">Pimpinan Cabang</a></li>
-                                    <li><a href="#majelis" class="dropdown-link">Majelis & Lembaga</a></li>
-                                    <li><a href="#ortom" class="dropdown-link">Organisasi Otonom (Ortom)</a></li>
-                                    <li><a href="#ranting" class="dropdown-link">Pimpinan Ranting (PRM)</a></li>
+                                    <li><Link href="/profil-organisasi" class="dropdown-link">Profil PCM Simo</Link></li>
+                                    <li><Link href="/profil-organisasi#pimpinan" class="dropdown-link">Susunan Pimpinan (2023-2028)</Link></li>
+                                    <li><Link href="/profil-organisasi#sk-resmi" class="dropdown-link">SK PDM Boyolali</Link></li>
+                                    <li><Link href="/profil-organisasi#visi-misi" class="dropdown-link">Visi & Misi</Link></li>
+                                    <li><Link href="/profil-organisasi#majelis" class="dropdown-link">Majelis & Lembaga</Link></li>
+                                    <li><Link href="/profil-organisasi#ortom" class="dropdown-link">Organisasi Otonom (Ortom)</Link></li>
                                 </ul>
                             </transition>
                         </li>
@@ -188,13 +190,13 @@ onUnmounted(() => {
             <transition name="slide-down">
                 <div v-if="mobileMenuOpen" class="mobile-drawer">
                     <ul class="mobile-menu-list">
-                        <li><Link href="/" class="mobile-nav-link" @click="mobileMenuOpen = false">BERANDA</Link></li>
-                        <li><a href="#organisasi" class="mobile-nav-link" @click="mobileMenuOpen = false">ORGANISASI</a></li>
-                        <li><a href="#berita" class="mobile-nav-link" @click="mobileMenuOpen = false">BERITA</a></li>
-                        <li><a href="#khazanah" class="mobile-nav-link" @click="mobileMenuOpen = false">KHAZANAH ISLAM</a></li>
-                        <li><a href="#amal-usaha" class="mobile-nav-link" @click="mobileMenuOpen = false">AMAL USAHA</a></li>
-                        <li><a href="#agenda" class="mobile-nav-link" @click="mobileMenuOpen = false">AGENDA</a></li>
-                        <li><a href="#layanan" class="mobile-nav-link" @click="mobileMenuOpen = false">LAYANAN</a></li>
+                        <li><Link href="/" class="mobile-nav-link" :class="{ 'mobile-nav-link--active': $page.component === 'Welcome' }" @click="mobileMenuOpen = false">BERANDA</Link></li>
+                        <li><Link href="/profil-organisasi" class="mobile-nav-link" :class="{ 'mobile-nav-link--active': $page.component === 'OrganizationProfile' }" @click="mobileMenuOpen = false">PROFIL ORGANISASI</Link></li>
+                        <li><a href="/#berita" class="mobile-nav-link" @click="mobileMenuOpen = false">BERITA</a></li>
+                        <li><a href="/#khazanah" class="mobile-nav-link" @click="mobileMenuOpen = false">KHAZANAH ISLAM</a></li>
+                        <li><Link href="/profil-organisasi#aum" class="mobile-nav-link" @click="mobileMenuOpen = false">AMAL USAHA</Link></li>
+                        <li><a href="/#agenda" class="mobile-nav-link" @click="mobileMenuOpen = false">AGENDA</a></li>
+                        <li><a href="/#layanan" class="mobile-nav-link" @click="mobileMenuOpen = false">LAYANAN</a></li>
                         <li>
                             <Link :href="$page.props.auth?.user ? '/dashboard' : '/dashboard/login'" class="mobile-nav-link mobile-nav-admin" @click="mobileMenuOpen = false">
                                 {{ $page.props.auth?.user ? 'DASHBOARD PENGURUS' : 'PORTAL PENGURUS' }}
@@ -339,10 +341,11 @@ onUnmounted(() => {
                     <div class="footer-col">
                         <h4 class="col-heading">Tentang</h4>
                         <ul class="col-links">
-                            <li><a href="#">Sejarah PCM Simo</a></li>
-                            <li><a href="#">Profil Pimpinan</a></li>
-                            <li><a href="#">Visi & Misi</a></li>
-                            <li><a href="#">Amal Usaha</a></li>
+                            <li><Link href="/profil-organisasi#sejarah">Sejarah PCM Simo</Link></li>
+                            <li><Link href="/profil-organisasi#pimpinan">Profil Pimpinan</Link></li>
+                            <li><Link href="/profil-organisasi#visi-misi">Visi & Misi</Link></li>
+                            <li><Link href="/profil-organisasi#sk-resmi">SK PDM Boyolali</Link></li>
+                            <li><Link href="/profil-organisasi#aum">Amal Usaha</Link></li>
                         </ul>
                     </div>
 

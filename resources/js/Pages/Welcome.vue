@@ -462,6 +462,66 @@ const newsflashList = computed(() => {
                 </div>
             </section>
 
+            <!-- ── Pimpinan Cabang Muhammadiyah Simo 2023-2028 Preview ── -->
+            <section class="pimpinan-preview-section reveal-section" id="organisasi">
+                <div class="section-heading-bar flex-between">
+                    <div>
+                        <h2 class="section-title">
+                            Pimpinan Cabang <span class="title-highlight">Muhammadiyah Simo</span>
+                        </h2>
+                        <span class="heading-desc">Periode 2023 – 2028 | SK PDM Boyolali No. 100/KEP/III.0/D/2023</span>
+                    </div>
+                    <Link href="/profil-organisasi" class="btn-more-pimpinan">
+                        <span>Lihat Profil Lengkap</span>
+                        <v-icon size="16">mdi-arrow-right</v-icon>
+                    </Link>
+                </div>
+
+                <div class="pimpinan-preview-grid">
+                    <!-- Featured Ketua Card -->
+                    <div class="pimpinan-preview-card pimpinan-preview-card--ketua">
+                        <div class="pimpinan-prev-badge">KETUA PCM SIMO</div>
+                        <div class="pimpinan-prev-avatar">
+                            <span class="avatar-init">HS</span>
+                        </div>
+                        <div class="pimpinan-prev-info">
+                            <h3 class="pimpinan-prev-name">H. Sholihin, S.Pd</h3>
+                            <p class="pimpinan-prev-role">Ketua Pimpinan Cabang</p>
+                            <span class="pimpinan-prev-period">Periode 2023 – 2028</span>
+                        </div>
+                    </div>
+
+                    <!-- Anggota Preview Cards (3 items) -->
+                    <div
+                        v-for="off in officials.filter(o => o.sort_order !== 1).slice(0, 3)"
+                        :key="off.id"
+                        class="pimpinan-preview-card"
+                    >
+                        <div class="pimpinan-prev-badge pimpinan-prev-badge--sub">ANGGOTA</div>
+                        <div class="pimpinan-prev-avatar pimpinan-prev-avatar--sub">
+                            <span class="avatar-init">
+                                {{ off.name.replace(/^(Drs\.|H\.|Ir\.|dr\.)\s*/i, '').substring(0, 2).toUpperCase() }}
+                            </span>
+                        </div>
+                        <div class="pimpinan-prev-info">
+                            <h3 class="pimpinan-prev-name">{{ off.name }}</h3>
+                            <p class="pimpinan-prev-role">Anggota Pimpinan Cabang</p>
+                            <span class="pimpinan-prev-period">PCM Simo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pimpinan-cta-bottom">
+                    <p class="pimpinan-cta-text">
+                        Total 9 Personalia Pimpinan Cabang Muhammadiyah Simo Masa Jabatan 2023 – 2028 telah ditetapkan secara sah oleh PDM Boyolali.
+                    </p>
+                    <Link href="/profil-organisasi" class="pimpinan-cta-link">
+                        <span>Buka Susunan Lengkap & Dokumen SK</span>
+                        <v-icon size="16" class="ml-1">mdi-arrow-right</v-icon>
+                    </Link>
+                </div>
+            </section>
+
             <!-- ── Amal Usaha Muhammadiyah (AUM) Simo ── -->
             <section class="aum-section reveal-section" id="amal-usaha">
                 <div class="section-heading-bar">
@@ -1612,6 +1672,172 @@ const newsflashList = computed(() => {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* ── Pimpinan Preview Section ── */
+.pimpinan-preview-section {
+    margin-bottom: 40px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-more-pimpinan {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    color: #006837;
+    border: 1px solid #a7f3d0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-more-pimpinan:hover {
+    background: #006837;
+    color: #ffffff;
+}
+
+.pimpinan-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.pimpinan-preview-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.pimpinan-preview-card:hover {
+    border-color: #86efac;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.pimpinan-preview-card--ketua {
+    background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+    border: 2px solid #86efac;
+}
+
+.pimpinan-prev-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #065f46;
+    background: #dcfce7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+}
+
+.pimpinan-prev-badge--sub {
+    color: #475569;
+    background: #e2e8f0;
+}
+
+.pimpinan-prev-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F59E0B, #006837);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 10px rgba(0, 104, 55, 0.15);
+}
+
+.pimpinan-prev-avatar--sub {
+    background: linear-gradient(135deg, #0A2540, #006837);
+    font-size: 1.1rem;
+}
+
+.pimpinan-prev-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.pimpinan-prev-role {
+    font-size: 0.78rem;
+    color: #006837;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.pimpinan-prev-period {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.pimpinan-cta-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pimpinan-cta-text {
+    font-size: 0.82rem;
+    color: #475569;
+}
+
+.pimpinan-cta-link {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #006837;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.pimpinan-cta-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .pimpinan-preview-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .pimpinan-preview-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>

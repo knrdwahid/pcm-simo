@@ -10,7 +10,25 @@ use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/profil-organisasi', [PublicController::class, 'organizationProfile'])->name('organization.profile');
+Route::get('/organisasi', function () {
+    return redirect()->route('organization.profile');
+});
 Route::get('/berita/{slug}', [PublicController::class, 'showArticle'])->name('article.show');
+
+// Fallback untuk serving file storage jika symlink cPanel hosting bermasalah / nonaktif
+Route::get('/storage/{path}', function (string $path) {
+    $storageRoot = realpath(storage_path('app/public'));
+    $filePath = realpath(storage_path('app/public/' . $path));
+
+    if (! $filePath || ! $storageRoot || ! str_starts_with($filePath, $storageRoot) || ! file_exists($filePath)) {
+        abort(404);
+    }
+
+    return response()->file($filePath, [
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('path', '.*');
 
 // Admin Guest Routes
 Route::middleware('guest')->prefix('dashboard')->group(function () {

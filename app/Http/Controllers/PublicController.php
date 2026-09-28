@@ -207,4 +207,33 @@ class PublicController extends Controller
             'prayerDate' => $prayerData['date'],
         ]);
     }
+
+    public function organizationProfile(): Response
+    {
+        $officials = Official::orderBy('sort_order')->get();
+        $aums = Aum::all();
+        $prayerData = $this->getPrayerSchedule();
+
+        return Inertia::render('OrganizationProfile', [
+            'appName' => 'PCM Simo',
+            'officials' => $officials,
+            'aums' => $aums,
+            'prayerSchedule' => $prayerData['times'],
+            'prayerSource' => $prayerData['source'],
+            'prayerDate' => $prayerData['date'],
+            'skInfo' => [
+                'nomor' => '100 / KEP / III.0 / D / 2023',
+                'tentang' => 'Penetapan Ketua dan Anggota Pimpinan Cabang Muhammadiyah Simo Periode 2023 - 2028',
+                'penerbit' => 'Pimpinan Daerah Muhammadiyah Boyolali',
+                'tanggal_hijriyah' => '15 Rabiul Akhir 1445 H',
+                'tanggal_masehi' => '30 Oktober 2023 M',
+                'surat_permohonan' => 'Nomor 064/IV.0/A/2023 tanggal 20 Oktober 2023 M / 5 Robiul Akhir 1445 H',
+                'ketua_pdm' => 'Drs. H. Ali Muhson, M.Ag., M.PdI., M.H., M.M.',
+                'nbm_ketua' => '772695',
+                'sekretaris_pdm' => 'Drs. H. Aminudin Aziz',
+                'nbm_sekretaris' => '919303',
+                'periode' => '2023 - 2028',
+            ],
+        ]);
+    }
 }
