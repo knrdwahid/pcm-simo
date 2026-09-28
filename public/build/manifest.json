@@ -16,7 +16,7 @@
     "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-FIjT7I7g.css",
+    "file": "assets/app-itp0i0PV.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -25,13 +25,13 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-Dk8AsuWW.js",
+    "file": "assets/app-GpaLN1-o.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-DH35YJH0.css",
-      "assets/app-FIjT7I7g.css"
+      "assets/app-C5aC31fa.css",
+      "assets/app-itp0i0PV.css"
     ],
     "assets": [
       "assets/materialdesignicons-webfont-CSr8KVlo.eot",

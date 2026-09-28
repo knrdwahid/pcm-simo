@@ -129,7 +129,7 @@ class PublicController extends Controller
             $q->where('status', 'published');
         }])->get();
 
-        $officials = Official::orderBy('sort_order')->get();
+        $officials = $this->getOfficials();
         $aums = Aum::all();
 
         // Jadwal Shalat KHGT Muhammadiyah via Hisabmu API
@@ -210,7 +210,7 @@ class PublicController extends Controller
 
     public function organizationProfile(): Response
     {
-        $officials = Official::orderBy('sort_order')->get();
+        $officials = $this->getOfficials();
         $aums = Aum::all();
         $prayerData = $this->getPrayerSchedule();
 
@@ -235,5 +235,89 @@ class PublicController extends Controller
                 'periode' => '2023 - 2028',
             ],
         ]);
+    }
+
+    /**
+     * Dapatkan daftar Pengurus PCM Simo Periode 2023 - 2028 (SK PDM Boyolali No. 100/KEP/III.0/D/2023).
+     * Otomatis menyinkronkan data resmi jika database di hosting masih menyimpan data dummy lama.
+     */
+    private function getOfficials()
+    {
+        $authenticOfficials = [
+            [
+                'name' => 'H. Sholihin, S.Pd',
+                'position' => 'Ketua PCM Simo',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'Sayyaf, S.PdI',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 2,
+            ],
+            [
+                'name' => 'Syarif Widodo, M.PdI',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 3,
+            ],
+            [
+                'name' => 'Drs. Mukridin',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 4,
+            ],
+            [
+                'name' => 'Drs. Qomarudin',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 5,
+            ],
+            [
+                'name' => 'Mushowir, S.Ag., S.Kom',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 6,
+            ],
+            [
+                'name' => 'Suryani, S.Si., S.H',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 7,
+            ],
+            [
+                'name' => 'H. Suyono, S.H',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 8,
+            ],
+            [
+                'name' => 'Drs. Suramto, M.Pd',
+                'position' => 'Anggota Pimpinan Cabang',
+                'period' => '2023 - 2028',
+                'image_url' => null,
+                'sort_order' => 9,
+            ],
+        ];
+
+        // Periksa apakah database masih berisi data dummy lama
+        $hasCorrectKetua = Official::where('sort_order', 1)->where('name', 'like', '%Sholihin%')->exists();
+        if (! $hasCorrectKetua || Official::count() !== 9) {
+            Official::truncate();
+            foreach ($authenticOfficials as $item) {
+                Official::create($item);
+            }
+        }
+
+        return Official::orderBy('sort_order')->get();
     }
 }

@@ -42,6 +42,16 @@ const ketua = computed(() => {
     };
 });
 
+const getInitials = (name) => {
+    if (!name) return 'PCM';
+    const clean = name.replace(/^(Drs\.|H\.|Ir\.|dr\.|Prof\.)\s*/gi, '').trim();
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return clean.substring(0, 2).toUpperCase();
+};
+
 const anggotaList = computed(() => {
     const list = props.officials.filter(o => o.id !== ketua.value?.id && o.sort_order !== 1);
     if (!searchQuery.value.trim()) return list;
@@ -207,7 +217,7 @@ const ortomList = [
                 <div class="m3-card m3-card--featured">
                     <div class="m3-card-body m3-ketua-layout">
                         <div class="m3-avatar m3-avatar--large">
-                            <span>HS</span>
+                            <span>{{ getInitials(ketua.name) }}</span>
                         </div>
                         <div class="m3-ketua-info">
                             <div class="m3-role-pill">Ketua Pimpinan Cabang</div>
@@ -254,7 +264,7 @@ const ortomList = [
                     >
                         <div class="m3-card-body m3-member-layout">
                             <div class="m3-avatar">
-                                <span>{{ agg.name.replace(/^(Drs\.|H\.|Ir\.|dr\.)\s*/i, '').substring(0, 2).toUpperCase() }}</span>
+                                <span>{{ getInitials(agg.name) }}</span>
                             </div>
                             <div class="m3-member-info">
                                 <h4 class="m3-name">{{ agg.name }}</h4>
