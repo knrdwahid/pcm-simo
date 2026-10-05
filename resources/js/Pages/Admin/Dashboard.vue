@@ -71,6 +71,7 @@ const statCards = [
         iconBg: '#ecfdf5',
         iconColor: '#006837',
         accentColor: '#006837',
+        href: '/dashboard/news',
     },
     {
         label: 'KATEGORI BERITA',
@@ -80,25 +81,29 @@ const statCards = [
         iconBg: '#eff6ff',
         iconColor: '#2563eb',
         accentColor: '#2563eb',
+        href: '/dashboard/categories',
     },
     {
-        label: 'TOTAL PEMBACA',
+        label: 'TRAFIK & PENGUNJUNG',
         key: 'totalViews',
-        subLabel: 'Akumulasi kunjungan warta',
-        icon: 'mdi-eye-outline',
+        subKey: 'onlineVisitors',
+        subLabel: 'online sekarang',
+        icon: 'mdi-chart-timeline-variant-shimmer',
         iconBg: '#fff7ed',
         iconColor: '#ea580c',
         accentColor: '#ea580c',
         format: true,
+        href: '/dashboard/monitoring',
     },
     {
-        label: 'AMAL USAHA',
+        label: 'AUM & ORGANISASI',
         key: 'totalAums',
-        subLabel: 'Sekolah, PKU & Masjid',
-        icon: 'mdi-office-building-outline',
+        subLabel: 'Majelis, Ortom, AUM, Masjid',
+        icon: 'mdi-domain',
         iconBg: '#f0fdfa',
         iconColor: '#0d9488',
         accentColor: '#0d9488',
+        href: '/dashboard/aum',
     },
 ];
 </script>
@@ -106,62 +111,101 @@ const statCards = [
 <template>
     <Head title="Dashboard - PCM Simo" />
 
-    <div class="dashboard-container">
-        <!-- Header Section -->
-        <div class="dash-header">
-            <div>
-                <h1 class="dash-title">Ringkasan Dashboard</h1>
-                <p class="dash-subtitle">Selamat datang kembali, <strong class="text-slate-700">{{ user.name ?? 'Admin' }}</strong>. Pantau aktivitas portal dakwah dan warta terkini.</p>
-            </div>
-            <Link href="/dashboard/news/create" class="text-decoration-none">
-                <button class="btn-quick-create">
-                    <v-icon size="18" class="mr-1">mdi-plus</v-icon>
-                    <span>Tulis Berita Baru</span>
-                </button>
-            </Link>
-        </div>
-
-        <!-- Stat Cards Grid -->
-        <div class="stat-grid">
-            <div v-for="card in statCards" :key="card.key" class="stat-card">
-                <div class="stat-card-header">
-                    <span class="stat-label">{{ card.label }}</span>
-                    <div class="stat-icon-wrapper" :style="{ background: card.iconBg }">
-                        <v-icon :color="card.iconColor" size="20">{{ card.icon }}</v-icon>
-                    </div>
-                </div>
-
-                <div class="stat-value-row">
-                    <span class="stat-value">
-                        {{ card.format ? formatNumber(stats[card.key]) : stats[card.key] }}
-                    </span>
-                </div>
-
-                <div class="stat-footer">
-                    <template v-if="card.subKey">
-                        <span class="stat-badge-active">
-                            <span class="stat-pulse-dot"></span>
-                            {{ stats[card.subKey] }} {{ card.subLabel }}
+    <div class="m3-page-container">
+        <!-- ── Top Page Bar (Material 3 Header) ── -->
+        <header class="m3-header">
+            <div class="m3-header-main">
+                <div class="m3-header-titles">
+                    <div class="d-flex align-center ga-2 mb-1 flex-wrap">
+                        <span class="m3-header-badge">
+                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-view-dashboard-outline</v-icon>
+                            Portal Informasi &amp; Dakwah
                         </span>
-                    </template>
-                    <template v-else>
-                        <span class="stat-sub-text">{{ card.subLabel }}</span>
-                    </template>
+                        <span class="m3-header-badge m3-header-badge--count">
+                            PCM Simo
+                        </span>
+                    </div>
+                    <h1 class="m3-headline">Ringkasan Dashboard</h1>
+                    <p class="m3-subhead">
+                        Selamat datang kembali, <strong class="text-slate-800">{{ user.name ?? 'Admin' }}</strong>. Pantau aktivitas publikasi warta, AUM &amp; Ortom, serta performa portal terkini.
+                    </p>
+                </div>
+
+                <div class="m3-header-actions">
+                    <Link href="/dashboard/monitoring" class="text-decoration-none">
+                        <button class="m3-btn-tonal">
+                            <v-icon size="18" class="mr-1.5 text-emerald-700">mdi-chart-timeline-variant-shimmer</v-icon>
+                            <span>Monitoring Pengunjung</span>
+                        </button>
+                    </Link>
+                    <Link href="/dashboard/aum" class="text-decoration-none">
+                        <button class="m3-btn-tonal">
+                            <v-icon size="18" class="mr-1.5 text-emerald-700">mdi-domain</v-icon>
+                            <span>Kelola AUM &amp; Ortom</span>
+                        </button>
+                    </Link>
+                    <Link href="/dashboard/news/create" class="text-decoration-none">
+                        <button class="m3-fab-extended">
+                            <v-icon size="20" class="mr-1.5">mdi-plus</v-icon>
+                            <span>Tulis Berita Baru</span>
+                        </button>
+                    </Link>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Recent Articles Table Card -->
-        <div class="recent-table-card">
-            <div class="table-card-header">
+        <!-- ── Material 3 Metrics Grid ── -->
+        <section class="m3-metrics-grid" aria-label="Statistik Utama">
+            <component
+                :is="card.href ? Link : 'div'"
+                v-for="card in statCards"
+                :key="card.key"
+                :href="card.href"
+                class="m3-metric-card text-decoration-none"
+                :style="{ '--m3-accent': card.accentColor, '--m3-container': card.iconBg }"
+            >
+                <div class="m3-metric-top">
+                    <div class="m3-metric-icon">
+                        <v-icon size="22" :color="card.iconColor">{{ card.icon }}</v-icon>
+                    </div>
+                    <span v-if="card.subKey && stats[card.subKey] > 0" class="m3-metric-active-pill">
+                        <span class="m3-pulse-dot"></span>
+                        {{ stats[card.subKey] }} Aktif
+                    </span>
+                    <v-icon v-else size="16" class="m3-metric-arrow">mdi-arrow-top-right</v-icon>
+                </div>
+
+                <div class="m3-metric-body">
+                    <div class="m3-metric-value">
+                        {{ card.format ? formatNumber(stats[card.key]) : (stats[card.key] ?? 0) }}
+                    </div>
+                    <div class="m3-metric-label">{{ card.label }}</div>
+                </div>
+
+                <div class="m3-metric-footer">
+                    <span>{{ card.subLabel }}</span>
+                    <v-icon size="14" class="m3-metric-footer-icon">mdi-chevron-right</v-icon>
+                </div>
+            </component>
+        </section>
+
+        <!-- ── Recent Articles Table (Material 3 Card) ── -->
+        <div class="m3-table-card">
+            <div class="m3-table-header">
                 <div>
-                    <h2 class="table-card-title">Berita Terbaru</h2>
-                    <p class="table-card-subtitle">Warta dan publikasi artikel terkini PCM Simo</p>
+                    <div class="d-flex align-center ga-2 mb-1">
+                        <span class="m3-header-badge">
+                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
+                            Pembaruan Terkini
+                        </span>
+                    </div>
+                    <h2 class="m3-table-title">Warta Berita Terbaru</h2>
+                    <p class="m3-table-subtitle">Publikasi artikel dan kabar persyarikatan terkini se-Cabang Simo</p>
                 </div>
                 <Link href="/dashboard/news" class="text-decoration-none">
-                    <button class="btn-view-all">
-                        <span>Lihat Semua Berita</span>
-                        <v-icon size="16" class="ml-1">mdi-arrow-right</v-icon>
+                    <button class="m3-btn-tonal">
+                        <span>Buka Manajemen Berita</span>
+                        <v-icon size="16" class="ml-1.5">mdi-arrow-right</v-icon>
                     </button>
                 </Link>
             </div>
@@ -282,310 +326,376 @@ const statCards = [
 </template>
 
 <style scoped>
-.dashboard-container {
-    padding: 28px 32px;
-    max-width: 1280px;
+.m3-page-container {
+    padding: 32px 36px 60px;
+    max-width: 1320px;
     margin: 0 auto;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
 }
 
-/* ── Top Header ── */
-.dash-header {
+/* ── M3 Top Header ── */
+.m3-header {
+    margin-bottom: 24px;
+}
+
+.m3-header-main {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 26px;
+    gap: 18px;
 }
 
-@media (min-width: 640px) {
-    .dash-header {
+@media (min-width: 768px) {
+    .m3-header-main {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
     }
 }
 
-.dash-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.3px;
-    margin: 0;
-}
-
-.dash-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin: 3px 0 0 0;
-}
-
-.btn-quick-create {
+.m3-header-badge {
     display: inline-flex;
     align-items: center;
-    background: #006837;
-    color: #ffffff;
-    font-size: 13px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 11.5px;
     font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 12px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    border: 1px solid #a7f3d0;
+}
+
+.m3-header-badge--count {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+.m3-headline {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px 0;
+    line-height: 1.25;
+}
+
+.m3-subhead {
+    font-size: 13.5px;
+    color: #64748b;
+    margin: 0;
+    max-width: 640px;
+    line-height: 1.5;
+}
+
+.m3-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.m3-fab-extended {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #006837 0%, #008744 100%);
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 9999px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 104, 55, 0.25);
+    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.3);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-fab-extended:hover {
+    background: linear-gradient(135deg, #00502a 0%, #006837 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 104, 55, 0.4);
+}
+
+.m3-btn-tonal {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: all 0.2s ease;
 }
 
-.btn-quick-create:hover {
-    background: #00552d;
-    box-shadow: 0 4px 12px rgba(0, 104, 55, 0.35);
+.m3-btn-tonal:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* ── Stat Cards ── */
-.stat-grid {
+/* ── M3 Metrics Grid ── */
+.m3-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 16px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 @media (min-width: 640px) {
-    .stat-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .m3-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (min-width: 1024px) {
-    .stat-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .m3-metrics-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
-.stat-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+.m3-metric-card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.2s ease;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-.stat-card:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+.m3-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--m3-accent, #006837);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.m3-metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     border-color: #cbd5e1;
-    transform: translateY(-2px);
 }
 
-.stat-card-header {
+.m3-metric-card:hover::before {
+    opacity: 1;
+}
+
+.m3-metric-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
-.stat-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-
-.stat-icon-wrapper {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+.m3-metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--m3-container, #ecfdf5);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
-.stat-value-row {
-    margin-bottom: 12px;
+.m3-metric-arrow {
+    color: #94a3b8;
+    transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.5px;
-    line-height: 1;
+.m3-metric-card:hover .m3-metric-arrow {
+    color: var(--m3-accent, #006837);
+    transform: translate(2px, -2px);
 }
 
-.stat-footer {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    color: #64748b;
-}
-
-.stat-badge-active {
+.m3-metric-active-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: #ecfdf5;
-    color: #047857;
-    font-size: 11.5px;
-    font-weight: 600;
+    gap: 5px;
     padding: 2px 8px;
     border-radius: 9999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 700;
     border: 1px solid #a7f3d0;
 }
 
-.stat-pulse-dot {
+.m3-pulse-dot {
     width: 6px;
     height: 6px;
     border-radius: 9999px;
     background: #10b981;
+    animation: pulse 2s infinite;
 }
 
-.stat-sub-text {
-    font-size: 12px;
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.m3-metric-body {
+    margin-bottom: 12px;
+}
+
+.m3-metric-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.m3-metric-label {
+    font-size: 11px;
+    font-weight: 700;
     color: #64748b;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-/* ── Table Card ── */
-.recent-table-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    overflow: hidden;
-}
-
-.table-card-header {
+.m3-metric-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 22px 16px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    padding-top: 10px;
+    border-top: 1px solid #f8fafc;
+}
+
+.m3-metric-footer-icon {
+    transition: transform 0.2s ease;
+}
+
+.m3-metric-card:hover .m3-metric-footer-icon {
+    transform: translateX(3px);
+    color: #0f172a;
+}
+
+/* ── M3 Table Card ── */
+.m3-table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.m3-table-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px 24px 18px;
     border-bottom: 1px solid #f1f5f9;
 }
 
-.table-card-title {
-    font-size: 16px;
+@media (min-width: 640px) {
+    .m3-table-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.m3-table-title {
+    font-size: 17px;
     font-weight: 700;
     color: #0f172a;
     margin: 0;
 }
 
-.table-card-subtitle {
-    font-size: 12px;
+.m3-table-subtitle {
+    font-size: 12.5px;
     color: #64748b;
     margin: 2px 0 0 0;
 }
 
-.btn-view-all {
-    display: inline-flex;
-    align-items: center;
-    background: transparent;
-    border: none;
-    color: #006837;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: all 0.15s ease;
-}
-
-.btn-view-all:hover {
-    background: #f0fdf4;
-    color: #00552d;
-}
-
-/* ── Table ── */
+/* ── Table Styling ── */
 .table-scroll {
     overflow-x: auto;
 }
 
 .recent-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
+    border-collapse: separate;
+    border-spacing: 0;
     text-align: left;
 }
 
-.recent-table thead th {
+.recent-table th {
     background: #f8fafc;
-    padding: 12px 18px;
+    color: #475569;
     font-size: 11px;
     font-weight: 700;
-    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.6px;
+    padding: 12px 18px;
     border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-}
-
-.table-row {
-    border-bottom: 1px solid #f1f5f9;
-    transition: background-color 0.15s ease;
-}
-
-.table-row:last-child {
-    border-bottom: none;
-}
-
-.table-row:hover {
-    background-color: #f8fafc;
 }
 
 .recent-table td {
-    padding: 12px 18px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #1e293b;
     vertical-align: middle;
 }
 
-.col-thumb {
-    width: 70px;
+.table-row {
+    transition: background 0.15s ease;
 }
 
-.col-title {
-    min-width: 260px;
+.table-row:hover {
+    background: #f8fafc;
 }
 
-.col-cat {
-    width: 160px;
-    white-space: nowrap;
+.table-row:last-child td {
+    border-bottom: none;
 }
 
-.col-date {
-    width: 130px;
-    white-space: nowrap;
-}
+/* Column specific */
+.col-thumb { width: 70px; }
+.col-title { min-width: 260px; }
+.col-cat { width: 140px; }
+.col-date { width: 130px; }
+.col-status { width: 110px; }
+.col-action { width: 90px; }
 
-.col-status {
-    width: 110px;
-    white-space: nowrap;
-}
-
-.col-action {
-    width: 90px;
-    white-space: nowrap;
-    text-align: right;
-}
-
-/* Thumb */
+/* Thumbnail */
 .thumb-wrapper {
-    width: 58px;
-    height: 40px;
+    width: 52px;
+    height: 38px;
     border-radius: 8px;
     overflow: hidden;
     background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .thumb-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-    transition: transform 0.2s ease;
-}
-
-.table-row:hover .thumb-img {
-    transform: scale(1.05);
 }
 
 .thumb-placeholder {
@@ -600,20 +710,20 @@ const statCards = [
 .title-cell {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
 }
 
 .article-title-link {
-    font-size: 13px;
+    color: #0f172a;
     font-weight: 600;
-    color: #1e293b;
-    text-decoration: none;
+    font-size: 13.5px;
     line-height: 1.4;
+    text-decoration: none;
+    transition: color 0.15s ease;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    transition: color 0.15s ease;
 }
 
 .article-title-link:hover {
@@ -627,33 +737,33 @@ const statCards = [
 }
 
 .meta-views {
-    font-size: 11px;
-    color: #94a3b8;
+    font-size: 11.5px;
+    color: #64748b;
     display: inline-flex;
     align-items: center;
 }
 
 .headline-tag {
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
-    color: #b45309;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    padding: 0 6px;
-    border-radius: 9999px;
+    color: #d97706;
+    background: #fef3c7;
+    padding: 1px 6px;
+    border-radius: 4px;
 }
 
 /* Category Badge */
 .category-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 3px 9px;
+    gap: 6px;
+    padding: 4px 10px;
     border-radius: 9999px;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 600;
     border-width: 1px;
     border-style: solid;
+    white-space: nowrap;
 }
 
 .category-dot {
@@ -720,9 +830,9 @@ const statCards = [
 }
 
 .action-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -21,6 +21,13 @@ const articleToDelete = ref(null);
 const totalCount = computed(() => props.articles.length);
 const publishedCount = computed(() => props.articles.filter(a => a.status === 'published').length);
 const draftCount = computed(() => props.articles.filter(a => a.status === 'draft').length);
+const totalViews = computed(() => props.articles.reduce((acc, a) => acc + (a.views || 0), 0));
+
+const formatNumber = (num) => {
+    if (!num) return '0';
+    if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return num.toLocaleString('id-ID');
+};
 
 const hasActiveFilter = computed(() => {
     return (search.value && search.value.trim() !== '') ||
@@ -123,24 +130,137 @@ const doDelete = () => {
 <template>
     <Head title="Kelola Berita - Admin PCM Simo" />
 
-    <div class="news-page-container">
-        <!-- Top Page Header -->
-        <div class="page-header">
-            <div>
-                <div class="d-flex align-center ga-2 mb-1">
-                    <h1 class="page-title">Manajemen Berita</h1>
-                    <span class="total-badge">{{ totalCount }} Data</span>
+    <div class="m3-page-container">
+        <!-- ── Material 3 Top Page Header ── -->
+        <header class="m3-header">
+            <div class="m3-header-main">
+                <div class="m3-header-titles">
+                    <div class="d-flex align-center ga-2 mb-1 flex-wrap">
+                        <span class="m3-header-badge">
+                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
+                            Warta &amp; Publikasi
+                        </span>
+                        <span class="m3-header-badge m3-header-badge--count">
+                            {{ totalCount }} Berita
+                        </span>
+                    </div>
+                    <h1 class="m3-headline">Manajemen Berita</h1>
+                    <p class="m3-subhead">
+                        Kelola artikel warta, opini dakwah, dan publikasi persyarikatan PCM Simo.
+                    </p>
                 </div>
-                <p class="page-subtitle">Kelola artikel warta, opini dakwah, dan publikasi PCM Simo</p>
-            </div>
 
-            <Link href="/dashboard/news/create" class="text-decoration-none">
-                <button class="btn-create">
-                    <v-icon size="18" class="mr-1">mdi-plus</v-icon>
-                    <span>Tambah Berita Baru</span>
-                </button>
-            </Link>
-        </div>
+                <div class="m3-header-actions">
+                    <Link href="/dashboard/news/create" class="text-decoration-none">
+                        <button class="m3-fab-extended">
+                            <v-icon size="20" class="mr-2">mdi-plus</v-icon>
+                            <span>Tulis Berita Baru</span>
+                        </button>
+                    </Link>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Summary Metrics Grid (Material 3 Cards) ── -->
+        <section class="m3-metrics-grid" aria-label="Ringkasan Warta">
+            <button
+                type="button"
+                class="m3-metric-card"
+                :class="{ 'm3-metric-card--active': selectedStatus === 'semua' }"
+                style="--m3-accent: #006837; --m3-container: #ecfdf5;"
+                @click="setStatusTab('semua')"
+            >
+                <div class="m3-metric-top">
+                    <div class="m3-metric-icon">
+                        <v-icon size="22" color="#006837">mdi-newspaper-variant-outline</v-icon>
+                    </div>
+                    <span v-if="selectedStatus === 'semua'" class="m3-metric-active-pill">
+                        <span class="m3-pulse-dot"></span>
+                        Dipilih
+                    </span>
+                    <v-icon v-else size="16" class="m3-metric-arrow">mdi-arrow-right</v-icon>
+                </div>
+                <div class="m3-metric-body">
+                    <div class="m3-metric-value">{{ totalCount }}</div>
+                    <div class="m3-metric-label">TOTAL WARTA</div>
+                </div>
+                <div class="m3-metric-footer">
+                    <span>Semua artikel terdata</span>
+                    <v-icon size="14" class="m3-metric-footer-icon">mdi-chevron-right</v-icon>
+                </div>
+            </button>
+
+            <button
+                type="button"
+                class="m3-metric-card"
+                :class="{ 'm3-metric-card--active': selectedStatus === 'published' }"
+                style="--m3-accent: #059669; --m3-container: #ecfdf5;"
+                @click="setStatusTab('published')"
+            >
+                <div class="m3-metric-top">
+                    <div class="m3-metric-icon">
+                        <v-icon size="22" color="#059669">mdi-check-circle-outline</v-icon>
+                    </div>
+                    <span v-if="selectedStatus === 'published'" class="m3-metric-active-pill">
+                        <span class="m3-pulse-dot"></span>
+                        Dipilih
+                    </span>
+                    <v-icon v-else size="16" class="m3-metric-arrow">mdi-arrow-right</v-icon>
+                </div>
+                <div class="m3-metric-body">
+                    <div class="m3-metric-value">{{ publishedCount }}</div>
+                    <div class="m3-metric-label">SIAP TAYANG</div>
+                </div>
+                <div class="m3-metric-footer">
+                    <span>Aktif di portal publik</span>
+                    <v-icon size="14" class="m3-metric-footer-icon">mdi-chevron-right</v-icon>
+                </div>
+            </button>
+
+            <button
+                type="button"
+                class="m3-metric-card"
+                :class="{ 'm3-metric-card--active': selectedStatus === 'draft' }"
+                style="--m3-accent: #64748b; --m3-container: #f1f5f9;"
+                @click="setStatusTab('draft')"
+            >
+                <div class="m3-metric-top">
+                    <div class="m3-metric-icon">
+                        <v-icon size="22" color="#64748b">mdi-file-document-edit-outline</v-icon>
+                    </div>
+                    <span v-if="selectedStatus === 'draft'" class="m3-metric-active-pill">
+                        <span class="m3-pulse-dot" style="background: #64748b;"></span>
+                        Dipilih
+                    </span>
+                    <v-icon v-else size="16" class="m3-metric-arrow">mdi-arrow-right</v-icon>
+                </div>
+                <div class="m3-metric-body">
+                    <div class="m3-metric-value">{{ draftCount }}</div>
+                    <div class="m3-metric-label">DRAFT / ARSIP</div>
+                </div>
+                <div class="m3-metric-footer">
+                    <span>Belum dipublikasikan</span>
+                    <v-icon size="14" class="m3-metric-footer-icon">mdi-chevron-right</v-icon>
+                </div>
+            </button>
+
+            <div class="m3-metric-card" style="--m3-accent: #ea580c; --m3-container: #fff7ed;">
+                <div class="m3-metric-top">
+                    <div class="m3-metric-icon">
+                        <v-icon size="22" color="#ea580c">mdi-eye-outline</v-icon>
+                    </div>
+                    <v-icon size="16" class="m3-metric-arrow">mdi-arrow-top-right</v-icon>
+                </div>
+                <div class="m3-metric-body">
+                    <div class="m3-metric-value">{{ formatNumber(totalViews) }}</div>
+                    <div class="m3-metric-label">TOTAL PEMBACA</div>
+                </div>
+                <div class="m3-metric-footer">
+                    <span>Akumulasi pembaca</span>
+                    <v-icon size="14" class="m3-metric-footer-icon">mdi-chevron-right</v-icon>
+                </div>
+            </div>
+        </section>
 
         <!-- Filter & Control Toolbar -->
         <div class="toolbar-card">
@@ -406,49 +526,420 @@ const doDelete = () => {
             </div>
         </div>
 
-        <!-- Delete Confirmation Dialog -->
-        <v-dialog v-model="deleteDialog" max-width="440">
-            <v-card rounded="xl" class="pa-6 border border-slate-100">
-                <div class="d-flex align-center ga-3 mb-3">
-                    <div class="dialog-icon-danger">
-                        <v-icon color="#e11d48" size="24">mdi-alert-circle-outline</v-icon>
+        <!-- ── Material Design 3 Delete Confirmation Dialog ── -->
+        <v-dialog v-model="deleteDialog" max-width="460" transition="dialog-bottom-transition">
+            <div class="m3-dialog-surface">
+                <div class="m3-dialog-header">
+                    <div class="m3-dialog-lead">
+                        <div class="m3-dialog-icon-badge" style="background: #fff1f2; color: #e11d48;">
+                            <v-icon size="24" color="#e11d48">mdi-alert-circle-outline</v-icon>
+                        </div>
+                        <div>
+                            <div class="m3-dialog-overline" style="color: #e11d48;">Konfirmasi Hapus</div>
+                            <h2 class="m3-dialog-headline" style="font-size: 17px;">Hapus Berita Ini?</h2>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-base font-bold text-slate-800">Hapus Berita Ini?</div>
-                        <div class="text-xs text-slate-500">Artikel yang dihapus tidak dapat dipulihkan kembali.</div>
-                    </div>
-                </div>
-
-                <div class="dialog-quote">
-                    "{{ articleToDelete?.title }}"
-                </div>
-
-                <div class="d-flex justify-end ga-2 pt-2">
                     <button
                         type="button"
-                        class="dialog-btn-cancel"
+                        class="m3-dialog-close"
+                        aria-label="Tutup"
                         @click="deleteDialog = false"
                     >
-                        Batal
-                    </button>
-                    <button
-                        type="button"
-                        class="dialog-btn-delete"
-                        @click="doDelete"
-                    >
-                        Ya, Hapus Sekarang
+                        <v-icon size="18">mdi-close</v-icon>
                     </button>
                 </div>
-            </v-card>
+
+                <div class="m3-dialog-body py-4">
+                    <p class="text-xs text-slate-500 mb-2">Artikel warta berikut akan dihapus secara permanen dan tidak dapat dipulihkan:</p>
+                    <div class="dialog-quote">
+                        "{{ articleToDelete?.title }}"
+                    </div>
+                </div>
+
+                <div class="m3-dialog-footer">
+                    <div></div>
+                    <div class="d-flex ga-2">
+                        <button
+                            type="button"
+                            class="m3-btn-tonal"
+                            @click="deleteDialog = false"
+                        >
+                            Batal
+                        </button>
+                        <button
+                            type="button"
+                            class="m3-btn-filled m3-btn-filled--danger"
+                            @click="doDelete"
+                        >
+                            <v-icon size="16" class="mr-1">mdi-trash-can-outline</v-icon>
+                            <span>Ya, Hapus Sekarang</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </v-dialog>
     </div>
 </template>
 
 <style scoped>
+.m3-page-container,
 .news-page-container {
-    padding: 28px 32px;
-    max-width: 1280px;
+    padding: 32px 36px 60px;
+    max-width: 1320px;
     margin: 0 auto;
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+/* ── M3 Top Header ── */
+.m3-header {
+    margin-bottom: 24px;
+}
+
+.m3-header-main {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+@media (min-width: 768px) {
+    .m3-header-main {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+}
+
+.m3-header-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    border: 1px solid #a7f3d0;
+}
+
+.m3-header-badge--count {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+.m3-headline {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.4px;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.m3-subhead {
+    font-size: 13.5px;
+    color: #64748b;
+    margin: 4px 0 0;
+    max-width: 640px;
+}
+
+.m3-fab-extended {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #006837 0%, #008744 100%);
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.32);
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    white-space: nowrap;
+}
+
+.m3-fab-extended:hover {
+    background: linear-gradient(135deg, #00502a 0%, #006837 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 104, 55, 0.4);
+}
+
+/* ── M3 Metrics Grid ── */
+.m3-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+    .m3-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .m3-metrics-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.m3-metric-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.m3-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--m3-accent, #006837);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.m3-metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    border-color: #cbd5e1;
+}
+
+.m3-metric-card:hover::before {
+    opacity: 1;
+}
+
+.m3-metric-card--active {
+    border-color: var(--m3-accent, #006837) !important;
+    box-shadow: 0 4px 16px rgba(0, 104, 55, 0.12) !important;
+}
+
+.m3-metric-card--active::before {
+    opacity: 1 !important;
+}
+
+.m3-metric-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.m3-metric-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--m3-container, #ecfdf5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.m3-metric-arrow {
+    color: #94a3b8;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.m3-metric-card:hover .m3-metric-arrow {
+    color: var(--m3-accent, #006837);
+    transform: translate(2px, -2px);
+}
+
+.m3-metric-active-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid #a7f3d0;
+}
+
+.m3-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: #10b981;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.m3-metric-body {
+    margin-bottom: 12px;
+}
+
+.m3-metric-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.m3-metric-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.m3-metric-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    padding-top: 10px;
+    border-top: 1px solid #f8fafc;
+}
+
+.m3-metric-footer-icon {
+    transition: transform 0.2s ease;
+}
+
+.m3-metric-card:hover .m3-metric-footer-icon {
+    transform: translateX(3px);
+    color: #0f172a;
+}
+
+/* ── M3 Dialog Elements ── */
+.m3-dialog-surface {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.m3-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
+}
+
+.m3-dialog-lead {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.m3-dialog-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.m3-dialog-overline {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.m3-dialog-headline {
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.m3-dialog-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m3-dialog-close:hover { background: #e2e8f0; color: #0f172a; }
+
+.m3-dialog-body {
+    padding: 18px 24px;
+}
+
+.m3-dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+}
+
+.m3-btn-tonal {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 18px;
+    border-radius: 12px;
+    border: none;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.m3-btn-tonal:hover { background: #e2e8f0; color: #0f172a; }
+
+.m3-btn-filled {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #006837;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 104, 55, 0.25);
+}
+
+.m3-btn-filled--danger {
+    background: #e11d48;
+    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25);
+}
+
+.m3-btn-filled--danger:hover {
+    background: #be123c;
 }
 
 /* ── Top Header ── */

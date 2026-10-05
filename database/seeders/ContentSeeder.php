@@ -304,6 +304,7 @@ class ContentSeeder extends Seeder
             ],
             [
                 'name' => 'Gedung Dakwah Muhammadiyah & Masjid At-Taqwa Simo',
+                'type' => 'masjid',
                 'category' => 'Masjid & Dakwah',
                 'address' => 'Jl. Singoprono Utara, Ngaliyan, Pelem, Kec. Simo, Kab. Boyolali',
                 'leader' => 'H. Sholikin, S.Pd.',

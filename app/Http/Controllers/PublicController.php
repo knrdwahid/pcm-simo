@@ -130,7 +130,10 @@ class PublicController extends Controller
         }])->get();
 
         $officials = $this->getOfficials();
-        $aums = Aum::all();
+        $aums = Aum::active()
+            ->whereIn('type', ['amal_usaha', 'masjid'])
+            ->ordered()
+            ->get();
 
         // Jadwal Shalat KHGT Muhammadiyah via Hisabmu API
         $prayerData = $this->getPrayerSchedule();
@@ -211,7 +214,7 @@ class PublicController extends Controller
     public function organizationProfile(): Response
     {
         $officials = $this->getOfficials();
-        $aums = Aum::all();
+        $aums = Aum::active()->ordered()->get();
         $prayerData = $this->getPrayerSchedule();
 
         return Inertia::render('OrganizationProfile', [

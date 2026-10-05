@@ -580,11 +580,11 @@ const submit = (overrideStatus = null) => {
     border: 1px solid #cbd5e1;
     font-size: 13px;
     font-weight: 600;
-    padding: 9px 16px;
-    border-radius: 10px;
+    padding: 10px 20px;
+    border-radius: 9999px;
     cursor: pointer;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
@@ -592,27 +592,28 @@ const submit = (overrideStatus = null) => {
     background: #f8fafc;
     color: #0f172a;
     border-color: #94a3b8;
+    transform: translateY(-1px);
 }
 
 .btn-primary-action {
     display: inline-flex;
     align-items: center;
-    background: #006837;
+    background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     border: none;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
-    padding: 9px 18px;
-    border-radius: 10px;
+    padding: 10px 22px;
+    border-radius: 9999px;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0, 104, 55, 0.25);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.3);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .btn-primary-action:hover:not(:disabled) {
-    background: #00502b;
-    transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgba(0, 104, 55, 0.35);
+    background: linear-gradient(135deg, #00502a 0%, #006837 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 104, 55, 0.4);
 }
 
 .btn-primary-action:disabled,
@@ -639,7 +640,7 @@ const submit = (overrideStatus = null) => {
 .content-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 28px 32px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
 }
@@ -778,7 +779,7 @@ const submit = (overrideStatus = null) => {
 .sidebar-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 22px 24px;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     margin-bottom: 20px;
@@ -1042,22 +1043,22 @@ const submit = (overrideStatus = null) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #006837;
+    background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
     font-weight: 600;
-    padding: 12px 18px;
-    border-radius: 11px;
+    padding: 12px 20px;
+    border-radius: 9999px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0, 104, 55, 0.25);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.3);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .btn-sidebar-submit:hover:not(:disabled) {
-    background: #00502b;
-    transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgba(0, 104, 55, 0.35);
+    background: linear-gradient(135deg, #00502a 0%, #006837 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 104, 55, 0.4);
 }
 
 .btn-sidebar-submit:disabled {

@@ -60,73 +60,28 @@ const anggotaList = computed(() => {
     return list.filter(o => o.name.toLowerCase().includes(q));
 });
 
+// Data organisasi dikelola melalui Dashboard → AUM & Organisasi
+const defaultIcons = {
+    organisasi: 'mdi-sitemap-outline',
+    ortom: 'mdi-account-group-outline',
+    amal_usaha: 'mdi-office-building-outline',
+    masjid: 'mdi-mosque',
+};
+
+const byType = (type) =>
+    props.aums
+        .filter(a => (a.type || 'amal_usaha') === type)
+        .map(a => ({ ...a, desc: a.description, icon: a.icon || defaultIcons[type] }));
+
 // Majelis & Lembaga
-const majelisList = [
-    {
-        name: 'Majelis Tabligh & Tarjih',
-        desc: 'Pembinaan muballigh, kajian Himpunan Putusan Tarjih (HPT), dan pengajian rutin ranting.',
-        icon: 'mdi-book-open-page-variant-outline',
-    },
-    {
-        name: 'Majelis Dikdasmen & PNF',
-        desc: 'Pembinaan sekolah dan madrasah Muhammadiyah serta pendidikan non-formal di Simo.',
-        icon: 'mdi-school-outline',
-    },
-    {
-        name: 'Majelis Pembina Kesehatan Umum (MPKU)',
-        desc: 'Pengelolaan Klinik Pratama PKU Muhammadiyah Simo dan layanan kesehatan masyarakat.',
-        icon: 'mdi-hospital-box-outline',
-    },
-    {
-        name: 'Majelis Ekonomi, Bisnis & Kewirausahaan',
-        desc: 'Pemberdayaan potensi ekonomi persyarikatan dan kemandirian jamaah.',
-        icon: 'mdi-chart-line',
-    },
-    {
-        name: 'LAZISMU Kantor Layanan Simo',
-        desc: 'Pengelolaan zakat, infaq, dan shadaqah secara profesional, amanah, dan terpercaya.',
-        icon: 'mdi-hand-heart-outline',
-    },
-    {
-        name: 'Lembaga Resiliensi Bencana (MDMC)',
-        desc: 'Kesiapsiagaan, mitigasi, dan tanggap darurat bencana bersama relawan dan KOKAM.',
-        icon: 'mdi-shield-alert-outline',
-    },
-];
+const majelisList = computed(() => byType('organisasi'));
 
 // Organisasi Otonom
-const ortomList = [
-    {
-        name: "Pimpinan Cabang 'Aisyiyah (PCA) Simo",
-        desc: 'Gerakan dakwah perempuan berkemajuan dan pembinaan keluarga sakinah.',
-        icon: 'mdi-account-group-outline',
-    },
-    {
-        name: 'Pemuda Muhammadiyah (PC PM) Simo',
-        desc: 'Kader pelopor gerakan dakwah pemuda Islam dan kesiapsiagaan KOKAM.',
-        icon: 'mdi-shield-account-outline',
-    },
-    {
-        name: "Nasyiatul 'Aisyiyah (PCNA) Simo",
-        desc: 'Pembinaan remaja putri Islam dan program ketahanan keluarga muda.',
-        icon: 'mdi-flower-outline',
-    },
-    {
-        name: 'Ikatan Pelajar Muhammadiyah (PC IPM) Simo',
-        desc: 'Kaderisasi pelajar, pengembangan literasi, dan kepemimpinan di tingkat ranting/sekolah.',
-        icon: 'mdi-account-school-outline',
-    },
-    {
-        name: 'Gerakan Kepanduan Hizbul Wathan (HW)',
-        desc: 'Pendidikan karakter kepanduan berakhlak mulia dan cinta tanah air.',
-        icon: 'mdi-compass-outline',
-    },
-    {
-        name: 'Tapak Suci Putera Muhammadiyah (TSPM)',
-        desc: 'Perguruan seni bela diri pencak silat berasaskan Islam dan berakhlak mulia.',
-        icon: 'mdi-sword-cross',
-    },
-];
+const ortomList = computed(() => byType('ortom'));
+
+// Amal Usaha & Masjid
+const amalUsahaList = computed(() => byType('amal_usaha'));
+const masjidList = computed(() => byType('masjid'));
 </script>
 
 <template>
@@ -398,7 +353,7 @@ const ortomList = [
                 <div class="m3-grid-3">
                     <div
                         v-for="(maj, idx) in majelisList"
-                        :key="idx"
+                        :key="maj.id || idx"
                         class="m3-card m3-card--outlined"
                     >
                         <div class="m3-card-body">
@@ -424,7 +379,7 @@ const ortomList = [
 
                 <div class="m3-grid-3 mb-8">
                     <div
-                        v-for="(aumItem, index) in aums"
+                        v-for="(aumItem, index) in amalUsahaList"
                         :key="aumItem.id || index"
                         class="m3-card m3-card--outlined"
                     >
@@ -435,10 +390,44 @@ const ortomList = [
                                 <v-icon size="14" class="mr-1 text-slate-400">mdi-map-marker-outline</v-icon>
                                 <span>{{ aumItem.address }}</span>
                             </p>
+                            <p v-if="aumItem.leader" class="m3-aum-meta">
+                                <v-icon size="14" class="mr-1 text-slate-400">mdi-account-tie-outline</v-icon>
+                                <span>{{ aumItem.leader }}</span>
+                            </p>
                             <p v-if="aumItem.description" class="m3-aum-desc">{{ aumItem.description }}</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Masjid Section -->
+                <template v-if="masjidList.length">
+                    <div class="m3-section-bar">
+                        <div>
+                            <h3 class="m3-section-title">Masjid & Musholla Muhammadiyah</h3>
+                            <p class="m3-section-subtitle">Pusat ibadah, kajian, dan dakwah jamaah persyarikatan</p>
+                        </div>
+                    </div>
+
+                    <div class="m3-grid-3 mb-8">
+                        <div
+                            v-for="(msj, index) in masjidList"
+                            :key="msj.id || index"
+                            class="m3-card m3-card--outlined"
+                        >
+                            <div class="m3-card-body">
+                                <div class="m3-majelis-header">
+                                    <v-icon size="24" class="text-emerald-800 mr-3">{{ msj.icon }}</v-icon>
+                                    <h4 class="m3-majelis-title">{{ msj.name }}</h4>
+                                </div>
+                                <p v-if="msj.address" class="m3-aum-meta">
+                                    <v-icon size="14" class="mr-1 text-slate-400">mdi-map-marker-outline</v-icon>
+                                    <span>{{ msj.address }}</span>
+                                </p>
+                                <p v-if="msj.desc" class="m3-majelis-desc">{{ msj.desc }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
 
                 <!-- Ortom Section -->
                 <div class="m3-section-bar">
@@ -451,7 +440,7 @@ const ortomList = [
                 <div class="m3-grid-3">
                     <div
                         v-for="(ort, i) in ortomList"
-                        :key="i"
+                        :key="ort.id || i"
                         class="m3-card m3-card--outlined"
                     >
                         <div class="m3-card-body">
