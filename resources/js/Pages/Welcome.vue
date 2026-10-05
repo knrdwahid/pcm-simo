@@ -16,6 +16,20 @@ const props = defineProps({
     filters: { type: Object, default: () => ({ kategori: 'semua', cari: '' }) },
 });
 
+// Amal Usaha & Masjid (dikelola dari Dashboard → AUM & Organisasi)
+const homeAums = computed(() => props.aums.slice(0, 8));
+
+const aumVisual = (item) => {
+    const cat = `${item.category || ''} ${item.name || ''}`.toLowerCase();
+    let visual = { icon: 'mdi-office-building-outline', color: '#d97706' };
+    if (item.type === 'masjid' || cat.includes('masjid') || cat.includes('dakwah')) visual = { icon: 'mdi-mosque', color: '#059669' };
+    else if (cat.includes('kesehatan') || cat.includes('klinik') || cat.includes('pku')) visual = { icon: 'mdi-hospital-building', color: '#008744' };
+    else if (cat.includes('pendidikan') || cat.includes('sekolah')) visual = { icon: 'mdi-school', color: '#0284c7' };
+    else if (cat.includes('sosial') || cat.includes('filantropi') || cat.includes('panti')) visual = { icon: 'mdi-hand-heart-outline', color: '#db2777' };
+    else if (cat.includes('ekonomi') || cat.includes('usaha')) visual = { icon: 'mdi-storefront-outline', color: '#7c3aed' };
+    return { ...visual, icon: item.icon || visual.icon };
+};
+
 // Format Date ID
 const formatDate = (dateStr) => {
     if (!dateStr) return '-';
@@ -532,41 +546,21 @@ const newsflashList = computed(() => {
                 </div>
 
                 <div class="aum-grid">
-                    <div class="aum-card">
+                    <div v-for="item in homeAums" :key="item.id" class="aum-card">
                         <div class="aum-icon-circle">
-                            <v-icon size="28" color="#008744">mdi-hospital-building</v-icon>
+                            <v-icon size="28" :color="aumVisual(item).color">{{ aumVisual(item).icon }}</v-icon>
                         </div>
-                        <h3 class="aum-name">Klinik Pratama PKU Muhammadiyah Simo</h3>
-                        <p class="aum-desc">Layanan rawat jalan, IGD 24 jam, fisioterapi, USG 4D, dan persalinan melayani masyarakat Simo.</p>
-                        <span class="aum-tag">Kesehatan</span>
+                        <h3 class="aum-name">{{ item.name }}</h3>
+                        <p v-if="item.description" class="aum-desc">{{ item.description }}</p>
+                        <span class="aum-tag">{{ item.category || (item.type === 'masjid' ? 'Dakwah & Ibadah' : 'Amal Usaha') }}</span>
                     </div>
+                </div>
 
-                    <div class="aum-card">
-                        <div class="aum-icon-circle">
-                            <v-icon size="28" color="#0284c7">mdi-school</v-icon>
-                        </div>
-                        <h3 class="aum-name">SD Muhammadiyah Simo</h3>
-                        <p class="aum-desc">Sekolah dasar unggulan berkarakter islami, berprestasi sains dan tahfidz Al-Qur'an.</p>
-                        <span class="aum-tag">Pendidikan</span>
-                    </div>
-
-                    <div class="aum-card">
-                        <div class="aum-icon-circle">
-                            <v-icon size="28" color="#d97706">mdi-domain</v-icon>
-                        </div>
-                        <h3 class="aum-name">SMP Muhammadiyah 6 Simo</h3>
-                        <p class="aum-desc">Membina generasi mandiri, berilmu pengetahuan, dan berakhlakul karimah berkemajuan.</p>
-                        <span class="aum-tag">Pendidikan</span>
-                    </div>
-
-                    <div class="aum-card">
-                        <div class="aum-icon-circle">
-                            <v-icon size="28" color="#059669">mdi-mosque</v-icon>
-                        </div>
-                        <h3 class="aum-name">Masjid Besar At-Taqwa Simo</h3>
-                        <p class="aum-desc">Pusat ibadah, kajian Ahad pagi, baitul arqam, dan kegiatan dakwah persyarikatan.</p>
-                        <span class="aum-tag">Dakwah & Ibadah</span>
-                    </div>
+                <div v-if="aums.length > homeAums.length" class="text-center mt-6">
+                    <Link href="/profil-organisasi" class="pimpinan-cta-link">
+                        Lihat semua Amal Usaha &amp; Organisasi
+                        <v-icon size="16" class="ml-1">mdi-arrow-right</v-icon>
+                    </Link>
                 </div>
             </section>
         </div>

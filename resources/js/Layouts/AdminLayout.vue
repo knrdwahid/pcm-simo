@@ -8,8 +8,10 @@ const user = computed(() => page.props.auth?.user ?? { name: 'Admin' });
 
 const mainMenu = [
     { title: 'Dashboard', icon: 'mdi-view-dashboard-outline', href: '/dashboard', activeRoute: '/dashboard' },
+    { title: 'Monitoring', icon: 'mdi-chart-timeline-variant-shimmer', href: '/dashboard/monitoring', activeRoute: '/dashboard/monitoring' },
     { title: 'Berita', icon: 'mdi-newspaper-variant-outline', href: '/dashboard/news', activeRoute: '/dashboard/news' },
     { title: 'Kategori', icon: 'mdi-tag-outline', href: '/dashboard/categories', activeRoute: '/dashboard/categories' },
+    { title: 'AUM & Organisasi', icon: 'mdi-domain', href: '/dashboard/aum', activeRoute: '/dashboard/aum' },
     { title: 'Pengguna', icon: 'mdi-account-group-outline', href: '/dashboard/users', activeRoute: '/dashboard/users', roles: ['superadmin', 'admin'] },
 ];
 
@@ -66,10 +68,12 @@ const isActive = (item) => {
 const pageTitle = computed(() => {
     const url = page.url;
     if (url === '/dashboard') return 'Dashboard Utama';
+    if (url.startsWith('/dashboard/monitoring')) return 'Monitoring & Statistik Pengunjung';
     if (url.startsWith('/dashboard/news/create')) return 'Tulis Berita Baru';
     if (url.includes('/dashboard/news/') && url.endsWith('/edit')) return 'Sunting Berita';
     if (url.startsWith('/dashboard/news')) return 'Manajemen Berita';
     if (url.startsWith('/dashboard/categories')) return 'Kategori Berita';
+    if (url.startsWith('/dashboard/aum')) return 'AUM & Organisasi';
     if (url.startsWith('/dashboard/users')) return 'Manajemen Pengguna';
     return 'Panel Pengurus';
 });
@@ -281,25 +285,28 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 11px 16px;
+    border-radius: 9999px;
     font-size: 13.5px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.65);
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-bottom: 2px;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    margin-bottom: 4px;
+    position: relative;
 }
 
 .menu-item:hover {
-    color: rgba(255, 255, 255, 0.85);
-    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
 }
 
 .menu-item--active {
-    background: #006837 !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, #006837 0%, #008744 100%) !important;
+    color: #ffffff !important;
     font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0, 104, 55, 0.4);
 }
 
 /* ── Sidebar User ── */

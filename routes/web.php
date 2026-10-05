@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\AumController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NewsController;
@@ -44,6 +46,10 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
 
+    // Visitor & Traffic Analytics Monitoring
+    Route::get('/monitoring', [AnalyticsController::class, 'index'])->name('admin.monitoring.index');
+    Route::get('/monitoring/live', [AnalyticsController::class, 'live'])->name('admin.monitoring.live');
+
     // News Management
     Route::get('/news', [NewsController::class, 'index'])->name('admin.news.index');
     Route::get('/news/create', [NewsController::class, 'create'])->name('admin.news.create');
@@ -59,6 +65,14 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/categories', [CategoryController::class, 'store'])->name('admin.categories.store');
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('admin.categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
+
+    // AUM, Organisasi, Ortom & Masjid Management
+    Route::get('/aum', [AumController::class, 'index'])->name('admin.aum.index');
+    Route::post('/aum', [AumController::class, 'store'])->name('admin.aum.store');
+    // POST (bukan PUT) agar upload gambar via multipart/form-data berfungsi
+    Route::post('/aum/{aum}', [AumController::class, 'update'])->name('admin.aum.update');
+    Route::patch('/aum/{aum}/toggle-active', [AumController::class, 'toggleActive'])->name('admin.aum.toggle');
+    Route::delete('/aum/{aum}', [AumController::class, 'destroy'])->name('admin.aum.destroy');
 
     // User & Account Management (Super Admin & Admin Only)
     Route::middleware('role:superadmin,admin')->group(function () {
