@@ -1,6 +1,9 @@
 name: Deploy PCM Simo
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -120,10 +123,12 @@ jobs:
           composer2 install --no-dev --prefer-dist --no-interaction --optimize-autoloader
           composer2 check-platform-reqs --no-dev
 
+          php artisan migrate --force
           php artisan config:clear
           php artisan route:clear
           php artisan view:clear
           php artisan config:cache
+          php artisan route:cache
           php artisan view:cache
 
           test -f public/build/manifest.json
