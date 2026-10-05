@@ -1,7 +1,7 @@
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     appName: { type: String, default: 'PCM Simo' },
@@ -10,22 +10,6 @@ const props = defineProps({
     prayerSchedule: { type: Array, default: () => [] },
     prayerSource: { type: String, default: 'static' },
     prayerDate: { type: String, default: '' },
-    skInfo: {
-        type: Object,
-        default: () => ({
-            nomor: '100 / KEP / III.0 / D / 2023',
-            tentang: 'Penetapan Ketua dan Anggota Pimpinan Cabang Muhammadiyah Simo Periode 2023 - 2028',
-            penerbit: 'Pimpinan Daerah Muhammadiyah Boyolali',
-            tanggal_hijriyah: '15 Rabiul Akhir 1445 H',
-            tanggal_masehi: '30 Oktober 2023 M',
-            surat_permohonan: 'Nomor 064/IV.0/A/2023 tanggal 20 Oktober 2023 M / 5 Robiul Akhir 1445 H',
-            ketua_pdm: 'Drs. H. Ali Muhson, M.Ag., M.PdI., M.H., M.M.',
-            nbm_ketua: '772695',
-            sekretaris_pdm: 'Drs. H. Aminudin Aziz',
-            nbm_sekretaris: '919303',
-            periode: '2023 - 2028',
-        }),
-    },
 });
 
 // ── Navigation Tabs ──
@@ -34,7 +18,6 @@ const activeTab = ref('pimpinan');
 const searchQuery = ref('');
 const aumFilterCategory = ref('semua');
 const aumSearch = ref('');
-const showSkDialog = ref(false);
 
 // Synchronize tab with URL query parameter
 onMounted(() => {
@@ -103,9 +86,21 @@ const allDirectoryItems = computed(() => {
 
     // Filter by type
     if (aumFilterCategory.value === 'sekolah') {
-        items = items.filter(i => (i.category?.toLowerCase().includes('sekolah') || i.category?.toLowerCase().includes('pendidikan') || i.name?.toLowerCase().includes('sd') || i.name?.toLowerCase().includes('smp') || i.name?.toLowerCase().includes('mi') || i.name?.toLowerCase().includes('tk') || i.name?.toLowerCase().includes('paud')));
+        items = items.filter(i => (
+            i.category?.toLowerCase().includes('sekolah') ||
+            i.category?.toLowerCase().includes('pendidikan') ||
+            i.name?.toLowerCase().includes('sd') ||
+            i.name?.toLowerCase().includes('smp') ||
+            i.name?.toLowerCase().includes('mi') ||
+            i.name?.toLowerCase().includes('tk') ||
+            i.name?.toLowerCase().includes('paud')
+        ));
     } else if (aumFilterCategory.value === 'kesehatan') {
-        items = items.filter(i => (i.category?.toLowerCase().includes('kesehatan') || i.name?.toLowerCase().includes('klinik') || i.name?.toLowerCase().includes('pku')));
+        items = items.filter(i => (
+            i.category?.toLowerCase().includes('kesehatan') ||
+            i.name?.toLowerCase().includes('klinik') ||
+            i.name?.toLowerCase().includes('pku')
+        ));
     } else if (aumFilterCategory.value === 'masjid') {
         items = items.filter(i => i.type === 'masjid' || i.category?.toLowerCase().includes('masjid'));
     } else if (aumFilterCategory.value === 'ortom') {
@@ -145,7 +140,7 @@ const getTypeBadge = (type) => {
 
     <PublicLayout>
         <div class="org-wrapper">
-            <!-- ── Material Design 3 Hero Surface ── -->
+            <!-- ── Material Design 3 Hero Surface (Clean & Uncluttered) ── -->
             <header class="org-hero">
                 <div class="org-hero-inner">
                     <nav class="org-breadcrumbs" aria-label="Breadcrumb">
@@ -164,10 +159,6 @@ const getTypeBadge = (type) => {
                                     <v-icon size="14" class="mr-1.5 text-emerald-300">mdi-calendar-check</v-icon>
                                     Periode 2023 – 2028
                                 </span>
-                                <span class="org-badge-pill org-badge-pill--sk">
-                                    <v-icon size="13" class="mr-1 text-slate-300">mdi-certificate-outline</v-icon>
-                                    SK PDM Boyolali No. 100/KEP/III.0/D/2023
-                                </span>
                             </div>
 
                             <h1 class="org-hero-title">
@@ -178,13 +169,6 @@ const getTypeBadge = (type) => {
                                 Struktur kepemimpinan persyarikatan, majelis pembantu, dan jaringan amal usaha dakwah
                                 pencerahan di Kecamatan Simo, Kabupaten Boyolali.
                             </p>
-                        </div>
-
-                        <div class="org-hero-action">
-                            <button type="button" class="org-btn-sk" @click="showSkDialog = true">
-                                <v-icon size="18" class="mr-2">mdi-file-certificate-outline</v-icon>
-                                <span>Salinan SK Resmi</span>
-                            </button>
                         </div>
                     </div>
 
@@ -233,7 +217,7 @@ const getTypeBadge = (type) => {
                         @click="setTab('visimisi')"
                     >
                         <v-icon size="18" class="mr-2">mdi-bullseye-arrow</v-icon>
-                        <span>Visi, Misi &amp; Legalitas</span>
+                        <span>Visi &amp; Misi</span>
                     </button>
 
                     <button
@@ -281,7 +265,7 @@ const getTypeBadge = (type) => {
                                 <div class="org-ketua-avatar">
                                     <span>{{ getInitials(ketua.name) }}</span>
                                 </div>
-                                <span class="org-ketua-verified" title="Pimpinan Ditetapkan SK PDM">
+                                <span class="org-ketua-verified" title="Pimpinan Terverifikasi">
                                     <v-icon size="16" color="#ffffff">mdi-check-decagram</v-icon>
                                 </span>
                             </div>
@@ -300,8 +284,8 @@ const getTypeBadge = (type) => {
                                 </p>
                                 <div class="org-ketua-footer">
                                     <span class="org-footer-tag">
-                                        <v-icon size="13" class="mr-1 text-slate-500">mdi-file-document-outline</v-icon>
-                                        Diktum Pertama SK PDM Boyolali No. 100/KEP/III.0/D/2023
+                                        <v-icon size="13" class="mr-1 text-emerald-700">mdi-calendar-check</v-icon>
+                                        Masa Khidmat 2023 – 2028
                                     </span>
                                 </div>
                             </div>
@@ -313,7 +297,7 @@ const getTypeBadge = (type) => {
                         <div class="org-members-toolbar">
                             <div>
                                 <h3 class="org-members-title">Anggota Pimpinan Cabang</h3>
-                                <p class="org-members-sub">8 Personalia yang ditetapkan pada Diktum Kedua SK Penetapan</p>
+                                <p class="org-members-sub">8 Personalia Pimpinan Cabang Muhammadiyah Simo</p>
                             </div>
 
                             <!-- Search Filter -->
@@ -357,8 +341,8 @@ const getTypeBadge = (type) => {
                                     </div>
                                 </div>
                                 <div class="org-member-card-footer">
-                                    <v-icon size="12" class="mr-1 text-slate-400">mdi-check-circle-outline</v-icon>
-                                    <span>Diktum Kedua SK No. 100</span>
+                                    <v-icon size="12" class="mr-1 text-emerald-700">mdi-account-check-outline</v-icon>
+                                    <span>Pimpinan Cabang Simo</span>
                                 </div>
                             </article>
                         </div>
@@ -376,16 +360,16 @@ const getTypeBadge = (type) => {
                 </section>
 
                 <!-- ═════════════════════════════════════════════════════════
-                     TAB 2: VISI, MISI & LEGALITAS SK (Editorial Layout)
+                     TAB 2: VISI & MISI (Clean Editorial Layout)
                      ═════════════════════════════════════════════════════════ -->
-                <section v-show="activeTab === 'visimisi'" class="org-tab-section" aria-label="Visi, Misi & SK">
+                <section v-show="activeTab === 'visimisi'" class="org-tab-section" aria-label="Visi & Misi">
                     <div class="org-editorial-container">
                         <!-- Section Header -->
                         <div class="org-section-heading text-center mb-8">
                             <span class="org-sub-badge">Arah &amp; Landasan Gerak</span>
-                            <h2 class="org-heading-title">Visi, Misi &amp; Ketetapan Resmi</h2>
+                            <h2 class="org-heading-title">Visi &amp; Misi Persyarikatan</h2>
                             <p class="org-heading-desc">
-                                Panduan langkah dakwah persyarikatan berlandaskan amanat Musyawarah Cabang dan Surat Keputusan resmi.
+                                Panduan langkah dan komitmen dakwah pencerahan PCM Simo dalam mewujudkan masyarakat Islam yang sebenar-benarnya.
                             </p>
                         </div>
 
@@ -409,7 +393,7 @@ const getTypeBadge = (type) => {
                         </div>
 
                         <!-- Misi List -->
-                        <div class="org-mission-box mb-10">
+                        <div class="org-mission-box">
                             <div class="d-flex align-center ga-2 mb-4">
                                 <div class="org-icon-badge">
                                     <v-icon size="20" color="#006837">mdi-format-list-checks</v-icon>
@@ -451,46 +435,6 @@ const getTypeBadge = (type) => {
                                         <h4 class="org-mission-title">Kaderisasi &amp; Pemberdayaan Ortom</h4>
                                         <p class="org-mission-desc">Mengokohkan regenerasi kader pemuda, perempuan, dan relawan tanggap bencana untuk kesinambungan dakwah persyarikatan.</p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SK Legalitas Card -->
-                        <div class="org-sk-card">
-                            <div class="org-sk-top">
-                                <div class="d-flex align-center ga-3">
-                                    <div class="org-sk-icon-box">
-                                        <v-icon size="24" color="#006837">mdi-file-certificate</v-icon>
-                                    </div>
-                                    <div>
-                                        <span class="org-sk-tag">Dokumen Penetapan Hukum</span>
-                                        <h3 class="org-sk-title">Surat Keputusan PDM Boyolali</h3>
-                                        <p class="org-sk-subtitle">Nomor: {{ skInfo.nomor }}</p>
-                                    </div>
-                                </div>
-
-                                <button type="button" class="org-btn-view-sk" @click="showSkDialog = true">
-                                    <v-icon size="16" class="mr-1.5">mdi-eye-outline</v-icon>
-                                    <span>Buka Naskah SK</span>
-                                </button>
-                            </div>
-
-                            <div class="org-sk-meta-grid">
-                                <div class="org-sk-meta-cell">
-                                    <span class="org-sk-meta-label">Penerbit Dokumen</span>
-                                    <span class="org-sk-meta-val">{{ skInfo.penerbit }}</span>
-                                </div>
-                                <div class="org-sk-meta-cell">
-                                    <span class="org-sk-meta-label">Tanggal Penetapan</span>
-                                    <span class="org-sk-meta-val">{{ skInfo.tanggal_hijriyah }} / {{ skInfo.tanggal_masehi }}</span>
-                                </div>
-                                <div class="org-sk-meta-cell">
-                                    <span class="org-sk-meta-label">Ketua PDM Boyolali</span>
-                                    <span class="org-sk-meta-val">{{ skInfo.ketua_pdm }}</span>
-                                </div>
-                                <div class="org-sk-meta-cell">
-                                    <span class="org-sk-meta-label">Sekretaris PDM</span>
-                                    <span class="org-sk-meta-val">{{ skInfo.sekretaris_pdm }}</span>
                                 </div>
                             </div>
                         </div>
@@ -709,77 +653,6 @@ const getTypeBadge = (type) => {
                 </section>
             </main>
         </div>
-
-        <!-- ── MATERIAL 3 DIALOG NASKAH SK RESMI ── -->
-        <transition name="fade">
-            <div v-if="showSkDialog" class="org-dialog-overlay" @click.self="showSkDialog = false">
-                <div class="org-dialog-card" role="dialog" aria-modal="true">
-                    <div class="org-dialog-header">
-                        <div class="d-flex align-center ga-2">
-                            <v-icon size="20" color="#006837">mdi-file-certificate</v-icon>
-                            <h3 class="org-dialog-title">Naskah Resmi Surat Keputusan</h3>
-                        </div>
-                        <button type="button" class="org-dialog-close" @click="showSkDialog = false">
-                            <v-icon size="20">mdi-close</v-icon>
-                        </button>
-                    </div>
-
-                    <div class="org-dialog-body">
-                        <!-- Official Document Letterhead -->
-                        <div class="org-letterhead">
-                            <h4 class="org-letterhead-title">PIMPINAN DAERAH MUHAMMADIYAH KABUPATEN BOYOLALI</h4>
-                            <p class="org-letterhead-addr">Jl. Pandanaran No. 68 Tegalsari Siswodipuran Boyolali Telp. 0276 - 324279</p>
-                            <div class="org-letterhead-decree">
-                                <p class="font-bold underline text-slate-900">SURAT KEPUTUSAN PIMPINAN DAERAH MUHAMMADIYAH BOYOLALI</p>
-                                <p class="text-slate-600">Nomor: {{ skInfo.nomor }}</p>
-                                <p class="font-semibold text-emerald-800 mt-1">Tentang: {{ skInfo.tentang.toUpperCase() }}</p>
-                            </div>
-                        </div>
-
-                        <div class="org-decree-text">
-                            <p><b>Memperhatikan:</b> {{ skInfo.surat_permohonan }} perihal permohonan SK Penetapan.</p>
-                            <p><b>Menimbang:</b> Bahwa untuk ketertiban persyarikatan perlu segera menetapkan Pimpinan Cabang Muhammadiyah Simo Periode 2023 - 2028.</p>
-                            <p><b>Mengingat:</b> Anggaran Dasar Muhammadiyah Pasal 13 &amp; 26 serta Keputusan Rapat PDM Boyolali tanggal 23 Oktober 2023.</p>
-
-                            <div class="org-decree-decide">
-                                <p class="font-bold text-slate-900 mb-1">MEMUTUSKAN / MENETAPKAN:</p>
-                                <p><b>Pertama:</b> Mengangkat <b>{{ ketua.name }}</b> sebagai Ketua PCM Kecamatan Simo Masa Jabatan 2023 – 2028.</p>
-                                <p class="mt-2"><b>Kedua:</b> Mengangkat Anggota Pimpinan Cabang Muhammadiyah Simo 2023 – 2028:</p>
-                                <ol class="list-decimal list-inside mt-1 space-y-1 font-medium text-slate-800 pl-2">
-                                    <li v-for="off in props.officials.filter(o => o.sort_order !== 1)" :key="off.id">
-                                        {{ off.name }}
-                                    </li>
-                                </ol>
-                            </div>
-
-                            <p><b>Ketiga:</b> Keputusan ini berlaku mulai tanggal ditetapkan (30 Oktober 2023 M / 15 Rabiul Akhir 1445 H) sampai dengan akhir periode jabatan 2028.</p>
-                        </div>
-
-                        <!-- Signatures -->
-                        <div class="org-decree-signs">
-                            <div>
-                                <p class="font-bold text-slate-800">Ketua,</p>
-                                <div class="py-4 text-emerald-800 italic">[Tertanda &amp; Tercap]</div>
-                                <p class="font-bold underline text-slate-900">{{ skInfo.ketua_pdm }}</p>
-                                <p class="text-slate-500 text-[11px]">NBM. {{ skInfo.nbm_ketua }}</p>
-                            </div>
-                            <div>
-                                <p class="font-bold text-slate-800">Sekretaris,</p>
-                                <div class="py-4 text-emerald-800 italic">[Tertanda]</div>
-                                <p class="font-bold underline text-slate-900">{{ skInfo.sekretaris_pdm }}</p>
-                                <p class="text-slate-500 text-[11px]">NBM. {{ skInfo.nbm_sekretaris }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="org-dialog-footer">
-                        <button type="button" class="org-btn-close-modal" @click="showSkDialog = false">
-                            Tutup Dokumen
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </transition>
     </PublicLayout>
 </template>
 
@@ -855,25 +728,13 @@ const getTypeBadge = (type) => {
 }
 
 .org-hero-main {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
     margin-bottom: 32px;
-}
-
-@media (min-width: 840px) {
-    .org-hero-main {
-        flex-direction: row;
-        align-items: flex-end;
-        justify-content: space-between;
-    }
 }
 
 .org-badge-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
     margin-bottom: 12px;
 }
 
@@ -893,12 +754,6 @@ const getTypeBadge = (type) => {
     border: 1px solid rgba(16, 185, 129, 0.35);
 }
 
-.org-badge-pill--sk {
-    background: rgba(255, 255, 255, 0.1);
-    color: #f1f5f9;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 .org-hero-title {
     font-size: clamp(1.75rem, 3.2vw, 2.35rem);
     font-weight: 800;
@@ -914,29 +769,6 @@ const getTypeBadge = (type) => {
     line-height: 1.6;
     margin: 0;
     max-width: 660px;
-}
-
-.org-btn-sk {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 10px 20px;
-    border-radius: 9999px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-    white-space: nowrap;
-}
-
-.org-btn-sk:hover {
-    background: #ffffff;
-    color: #006837;
-    border-color: #ffffff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 /* Quick Statistics Counter */
@@ -1203,10 +1035,11 @@ const getTypeBadge = (type) => {
     display: inline-flex;
     align-items: center;
     font-size: 11.5px;
-    color: #64748b;
-    background: #f1f5f9;
-    padding: 3px 10px;
-    border-radius: 8px;
+    color: #065f46;
+    background: #ecfdf5;
+    padding: 3px 12px;
+    border-radius: 9999px;
+    font-weight: 600;
 }
 
 /* ── 5. Members Section Grid ── */
@@ -1369,12 +1202,12 @@ const getTypeBadge = (type) => {
     display: flex;
     align-items: center;
     font-size: 11px;
-    color: #94a3b8;
+    color: #64748b;
     padding-top: 12px;
     border-top: 1px dashed #f1f5f9;
 }
 
-/* ── 6. Tab 2: Visi, Misi & SK Styles ── */
+/* ── 6. Tab 2: Visi & Misi Styles ── */
 .org-editorial-container {
     max-width: 900px;
     margin: 0 auto;
@@ -1499,114 +1332,6 @@ const getTypeBadge = (type) => {
     color: #64748b;
     line-height: 1.6;
     margin: 0;
-}
-
-/* SK Card */
-.org-sk-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 24px;
-    padding: 28px 32px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-}
-
-.org-sk-top {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f1f5f9;
-    margin-bottom: 20px;
-}
-
-@media (min-width: 640px) {
-    .org-sk-top {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
-}
-
-.org-sk-icon-box {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: #ecfdf5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.org-sk-tag {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #047857;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.org-sk-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0;
-}
-
-.org-sk-subtitle {
-    font-size: 12px;
-    color: #64748b;
-    margin: 2px 0 0 0;
-}
-
-.org-btn-view-sk {
-    display: inline-flex;
-    align-items: center;
-    background: #006837;
-    color: #ffffff;
-    border: none;
-    padding: 9px 18px;
-    border-radius: 9999px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 104, 55, 0.2);
-    transition: all 0.2s ease;
-}
-
-.org-btn-view-sk:hover {
-    background: #00562e;
-}
-
-.org-sk-meta-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-}
-
-@media (min-width: 640px) {
-    .org-sk-meta-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.org-sk-meta-cell {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 12px 16px;
-}
-
-.org-sk-meta-label {
-    display: block;
-    font-size: 11px;
-    color: #64748b;
-    margin-bottom: 2px;
-}
-
-.org-sk-meta-val {
-    font-size: 13px;
-    font-weight: 700;
-    color: #0f172a;
 }
 
 /* ── 7. Tab 3: Majelis & Lembaga Grid ── */
@@ -1916,138 +1641,5 @@ const getTypeBadge = (type) => {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-}
-
-/* ── 10. Dialog Modal ── */
-.org-dialog-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.org-dialog-card {
-    background: #ffffff;
-    border-radius: 24px;
-    max-width: 680px;
-    width: 100%;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-}
-
-.org-dialog-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.org-dialog-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0;
-}
-
-.org-dialog-close {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-}
-
-.org-dialog-body {
-    padding: 24px;
-    overflow-y: auto;
-    font-size: 12.5px;
-    color: #334155;
-    line-height: 1.6;
-}
-
-.org-letterhead {
-    text-align: center;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #e2e8f0;
-    margin-bottom: 16px;
-}
-
-.org-letterhead-title {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 2px 0;
-}
-
-.org-letterhead-addr {
-    font-size: 11px;
-    color: #64748b;
-    margin: 0 0 10px 0;
-}
-
-.org-letterhead-decree {
-    font-size: 12px;
-}
-
-.org-decree-text {
-    space-y: 12px;
-}
-
-.org-decree-decide {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 14px;
-    margin: 12px 0;
-}
-
-.org-decree-signs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    text-align: center;
-    padding-top: 20px;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 20px;
-}
-
-.org-dialog-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.org-btn-close-modal {
-    background: #f1f5f9;
-    color: #475569;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.org-btn-close-modal:hover {
-    background: #e2e8f0;
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
 }
 </style>
