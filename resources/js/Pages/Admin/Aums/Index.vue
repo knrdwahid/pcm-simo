@@ -2,7 +2,7 @@
 import showAlert from '@/Utils/sweetalert';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 defineOptions({ layout: AdminLayout });
 
@@ -162,7 +162,119 @@ const categoryOptions = computed(() => {
     return [...new Set([...base, ...props.categorySuggestions])];
 });
 
+// ── Custom Combobox & Dropdown for Kategori / Bidang ──
+const categoryComboboxRef = ref(null);
+const isCategoryDropdownOpen = ref(false);
+const highlightedIndex = ref(-1);
+
+const filteredCategories = computed(() => {
+    const q = (form.category || '').trim().toLowerCase();
+    if (!q) return categoryOptions.value;
+    return categoryOptions.value.filter(cat => cat.toLowerCase().includes(q));
+});
+
+const isCustomNewCategory = computed(() => {
+    const q = (form.category || '').trim();
+    if (!q) return false;
+    return !categoryOptions.value.some(cat => cat.toLowerCase() === q.toLowerCase());
+});
+
+const quickSuggestionPills = computed(() => {
+    const primary = typeMeta[form.type]?.categories ?? [];
+    return [...new Set([...primary, ...categoryOptions.value])].slice(0, 5);
+});
+
+const toggleCategoryDropdown = () => {
+    isCategoryDropdownOpen.value = !isCategoryDropdownOpen.value;
+    highlightedIndex.value = -1;
+};
+
+const openCategoryDropdown = () => {
+    isCategoryDropdownOpen.value = true;
+};
+
+const closeCategoryDropdown = () => {
+    isCategoryDropdownOpen.value = false;
+    highlightedIndex.value = -1;
+};
+
+const selectCategory = (cat) => {
+    form.category = cat;
+    closeCategoryDropdown();
+};
+
+const clearCategory = () => {
+    form.category = '';
+    isCategoryDropdownOpen.value = true;
+    highlightedIndex.value = -1;
+};
+
+const onCategoryInput = () => {
+    isCategoryDropdownOpen.value = true;
+    highlightedIndex.value = -1;
+};
+
+const highlightNextOption = () => {
+    if (!isCategoryDropdownOpen.value) {
+        isCategoryDropdownOpen.value = true;
+        highlightedIndex.value = 0;
+        return;
+    }
+    const max = filteredCategories.value.length - 1;
+    if (highlightedIndex.value < max) {
+        highlightedIndex.value++;
+    } else {
+        highlightedIndex.value = 0;
+    }
+};
+
+const highlightPrevOption = () => {
+    if (!isCategoryDropdownOpen.value) {
+        isCategoryDropdownOpen.value = true;
+        highlightedIndex.value = Math.max(0, filteredCategories.value.length - 1);
+        return;
+    }
+    if (highlightedIndex.value > 0) {
+        highlightedIndex.value--;
+    } else {
+        highlightedIndex.value = Math.max(0, filteredCategories.value.length - 1);
+    }
+};
+
+const selectHighlightedOrCurrent = () => {
+    if (isCategoryDropdownOpen.value && highlightedIndex.value >= 0 && filteredCategories.value[highlightedIndex.value]) {
+        selectCategory(filteredCategories.value[highlightedIndex.value]);
+    } else if (isCategoryDropdownOpen.value && isCustomNewCategory.value) {
+        selectCategory(form.category.trim());
+    } else {
+        closeCategoryDropdown();
+    }
+};
+
+const handleClickOutsideCategory = (e) => {
+    if (categoryComboboxRef.value && !categoryComboboxRef.value.contains(e.target)) {
+        closeCategoryDropdown();
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutsideCategory);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutsideCategory);
+});
+
+watch(activeDialogTab, () => {
+    closeCategoryDropdown();
+});
+
+watch(dialog, (val) => {
+    if (!val) closeCategoryDropdown();
+});
+
 const openCreate = () => {
+    closeCategoryDropdown();
     editing.value = null;
     form.reset();
     form.clearErrors();
@@ -175,6 +287,7 @@ const openCreate = () => {
 };
 
 const openEdit = (item) => {
+    closeCategoryDropdown();
     editing.value = item;
     form.clearErrors();
     form.type = item.type || 'amal_usaha';
@@ -239,6 +352,7 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
+            closeCategoryDropdown();
             dialog.value = false;
             form.reset();
         },
@@ -621,24 +735,137 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                                 </div>
 
                                 <div class="m3-col-6">
-                                    <label class="m3-field-label">
+                                    <label class="m3-field-label" for="aum-category">
                                         Kategori / Bidang
                                     </label>
-                                    <div class="m3-input-box" :class="{ 'm3-input-box--error': form.errors.category }">
-                                        <v-icon size="18" class="m3-input-icon">mdi-tag-outline</v-icon>
-                                        <input
-                                            id="aum-category"
-                                            v-model="form.category"
-                                            type="text"
-                                            list="category-datalist"
-                                            class="m3-native-input"
-                                            placeholder="Pilih atau ketik kategori..."
-                                        />
-                                        <datalist id="category-datalist">
-                                            <option v-for="cat in categoryOptions" :key="cat" :value="cat" />
-                                        </datalist>
+                                    <div ref="categoryComboboxRef" class="m3-combobox-wrapper">
+                                        <div
+                                            class="m3-input-box m3-combobox-box"
+                                            :class="{
+                                                'm3-input-box--error': form.errors.category,
+                                                'm3-input-box--focused': isCategoryDropdownOpen,
+                                            }"
+                                            @click="openCategoryDropdown"
+                                        >
+                                            <v-icon size="18" class="m3-input-icon" :color="isCategoryDropdownOpen ? '#006837' : '#94a3b8'">mdi-tag-outline</v-icon>
+                                            <input
+                                                id="aum-category"
+                                                v-model="form.category"
+                                                type="text"
+                                                autocomplete="off"
+                                                class="m3-native-input"
+                                                placeholder="Pilih atau ketik kategori..."
+                                                @focus="openCategoryDropdown"
+                                                @input="onCategoryInput"
+                                                @keydown.down.prevent="highlightNextOption"
+                                                @keydown.up.prevent="highlightPrevOption"
+                                                @keydown.enter.prevent="selectHighlightedOrCurrent"
+                                                @keydown.esc="closeCategoryDropdown"
+                                            />
+                                            <button
+                                                v-if="form.category"
+                                                type="button"
+                                                class="m3-combobox-btn m3-combobox-btn--clear"
+                                                title="Hapus Kategori"
+                                                @click.stop="clearCategory"
+                                            >
+                                                <v-icon size="16">mdi-close-circle</v-icon>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="m3-combobox-btn m3-combobox-btn--toggle"
+                                                :class="{ 'm3-combobox-btn--open': isCategoryDropdownOpen }"
+                                                title="Pilihan Kategori"
+                                                @click.stop="toggleCategoryDropdown"
+                                            >
+                                                <v-icon size="18">mdi-chevron-down</v-icon>
+                                            </button>
+                                        </div>
+
+                                        <!-- Custom Material 3 Floating Dropdown Menu -->
+                                        <Transition name="m3-dropdown-fade">
+                                            <div v-if="isCategoryDropdownOpen" class="m3-combobox-menu">
+                                                <div class="m3-combobox-header">
+                                                    <span class="m3-combobox-header-title">Pilih Kategori</span>
+                                                    <span class="m3-combobox-badge">{{ typeMeta[form.type]?.short || 'Umum' }}</span>
+                                                </div>
+
+                                                <div class="m3-combobox-list" role="listbox">
+                                                    <!-- Opsi Kategori Baru Jika Mengetik Kustom -->
+                                                    <button
+                                                        v-if="isCustomNewCategory"
+                                                        type="button"
+                                                        class="m3-combobox-item m3-combobox-item--custom"
+                                                        @click.stop="selectCategory(form.category.trim())"
+                                                    >
+                                                        <div class="m3-combobox-item-icon m3-combobox-item-icon--custom">
+                                                            <v-icon size="15" color="#006837">mdi-plus-circle-outline</v-icon>
+                                                        </div>
+                                                        <div class="m3-combobox-item-text">
+                                                            <span class="m3-combobox-item-label font-semibold text-slate-800">Gunakan Kategori Baru:</span>
+                                                            <span class="m3-combobox-item-sub">"{{ form.category.trim() }}"</span>
+                                                        </div>
+                                                    </button>
+
+                                                    <!-- Daftar Pilihan Kategori -->
+                                                    <button
+                                                        v-for="(cat, idx) in filteredCategories"
+                                                        :key="cat"
+                                                        type="button"
+                                                        class="m3-combobox-item"
+                                                        :class="{
+                                                            'm3-combobox-item--active': form.category === cat,
+                                                            'm3-combobox-item--highlighted': highlightedIndex === idx,
+                                                        }"
+                                                        @click.stop="selectCategory(cat)"
+                                                        @mouseenter="highlightedIndex = idx"
+                                                    >
+                                                        <div class="m3-combobox-item-icon">
+                                                            <v-icon size="15" :color="form.category === cat ? '#006837' : '#64748b'">mdi-tag-outline</v-icon>
+                                                        </div>
+                                                        <div class="m3-combobox-item-text">
+                                                            <span class="m3-combobox-item-label">{{ cat }}</span>
+                                                        </div>
+                                                        <v-icon
+                                                            v-if="form.category === cat"
+                                                            size="16"
+                                                            color="#006837"
+                                                            class="m3-combobox-item-check"
+                                                        >
+                                                            mdi-check-circle
+                                                        </v-icon>
+                                                    </button>
+
+                                                    <!-- Status Kosong -->
+                                                    <div v-if="filteredCategories.length === 0 && !isCustomNewCategory" class="m3-combobox-empty">
+                                                        <v-icon size="18" color="#94a3b8" class="mr-1.5">mdi-tag-off-outline</v-icon>
+                                                        <span>Kategori tidak ditemukan</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Transition>
                                     </div>
-                                    <p class="m3-helper-text">Saran: {{ categoryOptions.slice(0, 4).join(', ') }}</p>
+
+                                    <!-- Quick Interactive Recommendation Pills -->
+                                    <div class="m3-combobox-chips">
+                                        <span class="m3-combobox-chips-label">Rekomendasi:</span>
+                                        <div class="m3-combobox-chips-list">
+                                            <button
+                                                v-for="cat in quickSuggestionPills"
+                                                :key="cat"
+                                                type="button"
+                                                class="m3-chip-pill"
+                                                :class="{ 'm3-chip-pill--active': form.category === cat }"
+                                                @click="selectCategory(cat)"
+                                            >
+                                                <v-icon size="12" class="mr-1" :color="form.category === cat ? '#006837' : '#64748b'">
+                                                    {{ form.category === cat ? 'mdi-check' : 'mdi-plus' }}
+                                                </v-icon>
+                                                <span>{{ cat }}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p v-if="form.errors.category" class="m3-error-text">{{ form.errors.category }}</p>
                                 </div>
 
                                 <div class="m3-col-6">
@@ -2001,6 +2228,271 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-counter-text {
     font-size: 11px;
     color: #94a3b8;
+}
+
+/* ── MD3 Combobox Component (Custom Category Dropdown) ── */
+.m3-combobox-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.m3-combobox-box {
+    padding-right: 6px;
+    cursor: text;
+}
+
+.m3-combobox-btn {
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+}
+
+.m3-combobox-btn:hover {
+    color: #0f172a;
+    background: #e2e8f0;
+}
+
+.m3-combobox-btn--clear {
+    margin-right: 2px;
+}
+
+.m3-combobox-btn--clear:hover {
+    color: #e11d48;
+    background: #ffe4e6;
+}
+
+.m3-combobox-btn--open {
+    transform: rotate(180deg);
+    color: #006837;
+}
+
+.m3-combobox-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+    z-index: 60;
+    overflow: hidden;
+}
+
+.m3-combobox-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafbfc;
+}
+
+.m3-combobox-header-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.m3-combobox-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #006837;
+    background: #ecfdf5;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    border: 1px solid #d1fae5;
+}
+
+.m3-combobox-list {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.m3-combobox-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.m3-combobox-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.m3-combobox-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.m3-combobox-item:hover,
+.m3-combobox-item--highlighted {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.m3-combobox-item--active {
+    background: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+    color: #006837 !important;
+    font-weight: 600;
+}
+
+.m3-combobox-item--custom {
+    background: #f0fdf4;
+    border: 1px dashed #86efac;
+    margin-bottom: 4px;
+}
+
+.m3-combobox-item--custom:hover {
+    background: #dcfce7;
+    border-color: #4ade80;
+}
+
+.m3-combobox-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.m3-combobox-item--active .m3-combobox-item-icon {
+    background: #d1fae5;
+}
+
+.m3-combobox-item-icon--custom {
+    background: #dcfce7;
+}
+
+.m3-combobox-item-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.m3-combobox-item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.m3-combobox-item-sub {
+    font-size: 11px;
+    color: #006837;
+    font-weight: 600;
+    margin-top: 1px;
+}
+
+.m3-combobox-item-check {
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.m3-combobox-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    color: #94a3b8;
+    font-size: 12.5px;
+}
+
+/* ── Interactive Chips (Pills) ── */
+.m3-combobox-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 7px;
+    flex-wrap: wrap;
+}
+
+.m3-combobox-chips-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.m3-combobox-chips-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.m3-chip-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.m3-chip-pill:hover {
+    border-color: #006837;
+    color: #006837;
+    background: #ecfdf5;
+    transform: translateY(-1px);
+}
+
+.m3-chip-pill--active {
+    border-color: #006837;
+    background: #ecfdf5;
+    color: #006837;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 104, 55, 0.15);
+}
+
+/* ── Dropdown Transition ── */
+.m3-dropdown-fade-enter-active,
+.m3-dropdown-fade-leave-active {
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.m3-dropdown-fade-enter-from,
+.m3-dropdown-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
 }
 
 /* ── MD3 Icon Picker Component ── */
