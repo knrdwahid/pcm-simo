@@ -388,7 +388,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                 <div class="m3-header-titles">
                     <div class="d-flex align-center ga-2 mb-1 flex-wrap">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-shield-check</v-icon>
+                            <v-icon size="13" class="mr-2 text-emerald-700">mdi-shield-check</v-icon>
                             Modul Pengelolaan
                         </span>
                         <span class="m3-header-badge m3-header-badge--count">
@@ -458,7 +458,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                     :aria-selected="activeType === tab.key"
                     @click="selectType(tab.key)"
                 >
-                    <v-icon size="16" class="mr-1.5">{{ tab.icon }}</v-icon>
+                    <v-icon size="16" class="mr-2">{{ tab.icon }}</v-icon>
                     <span class="m3-segmented-text">{{ tab.label }}</span>
                     <span class="m3-segmented-badge">{{ tab.count }}</span>
                 </button>
@@ -512,11 +512,11 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                     <!-- Floating Chips -->
                     <div class="m3-media-chips">
                         <span class="m3-chip m3-chip--type">
-                            <v-icon size="12" class="mr-1">{{ metaOf(item).icon }}</v-icon>
+                            <v-icon size="12" class="mr-1.5">{{ metaOf(item).icon }}</v-icon>
                             {{ metaOf(item).short }}
                         </span>
                         <span v-if="!item.is_active" class="m3-chip m3-chip--muted">
-                            <v-icon size="12" class="mr-1">mdi-eye-off-outline</v-icon>
+                            <v-icon size="12" class="mr-1.5">mdi-eye-off-outline</v-icon>
                             Tersembunyi
                         </span>
                     </div>
@@ -651,7 +651,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                         :class="{ 'm3-dialog-tab-btn--active': activeDialogTab === 'info' }"
                         @click="activeDialogTab = 'info'"
                     >
-                        <v-icon size="16" class="mr-1.5">mdi-card-text-outline</v-icon>
+                        <v-icon size="16" class="mr-2">mdi-card-text-outline</v-icon>
                         <span>1. Data Utama</span>
                     </button>
                     <button
@@ -660,7 +660,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                         :class="{ 'm3-dialog-tab-btn--active': activeDialogTab === 'contact' }"
                         @click="activeDialogTab = 'contact'"
                     >
-                        <v-icon size="16" class="mr-1.5">mdi-map-marker-radius-outline</v-icon>
+                        <v-icon size="16" class="mr-2">mdi-map-marker-radius-outline</v-icon>
                         <span>2. Kontak &amp; Lokasi</span>
                     </button>
                     <button
@@ -669,7 +669,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                         :class="{ 'm3-dialog-tab-btn--active': activeDialogTab === 'media' }"
                         @click="activeDialogTab = 'media'"
                     >
-                        <v-icon size="16" class="mr-1.5">mdi-image-filter-vintage</v-icon>
+                        <v-icon size="16" class="mr-2">mdi-image-filter-vintage</v-icon>
                         <span>3. Ikon, Foto &amp; Status</span>
                     </button>
                 </div>
@@ -1140,7 +1140,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                             class="m3-btn-text"
                             @click="activeDialogTab = activeDialogTab === 'media' ? 'contact' : 'info'"
                         >
-                            <v-icon size="16" class="mr-1">mdi-arrow-left</v-icon>
+                            <v-icon size="16" class="mr-2">mdi-arrow-left</v-icon>
                             <span>Sebelumnya</span>
                         </button>
                     </div>
@@ -1157,7 +1157,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                             @click="activeDialogTab = activeDialogTab === 'info' ? 'contact' : 'media'"
                         >
                             <span>Lanjut</span>
-                            <v-icon size="16" class="ml-1">mdi-arrow-right</v-icon>
+                            <v-icon size="16" class="ml-2">mdi-arrow-right</v-icon>
                         </button>
 
                         <button
@@ -1174,7 +1174,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
                                 width="2"
                                 class="mr-2"
                             />
-                            <v-icon v-else size="18" class="mr-1.5">mdi-check</v-icon>
+                            <v-icon v-else size="18" class="mr-2">mdi-check</v-icon>
                             <span>{{ form.processing ? 'Menyimpan...' : 'Simpan Data' }}</span>
                         </button>
                     </div>
@@ -1217,11 +1217,12 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -1252,6 +1253,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
@@ -1633,6 +1635,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-chip {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     font-size: 11px;
     font-weight: 700;
     padding: 4px 10px;
@@ -2753,6 +2756,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 8px 12px;
     border-radius: 10px;
     transition: all 0.15s ease;
@@ -2766,6 +2770,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 10px 18px;
     border-radius: 14px;
     border: none;
@@ -2804,6 +2809,7 @@ const iconOf = (item) => item.icon || metaOf(item).icon;
 .m3-btn-filled {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 10px 22px;
     border-radius: 14px;
     border: none;

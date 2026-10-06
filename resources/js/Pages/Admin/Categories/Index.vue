@@ -112,7 +112,7 @@ const hexToRgba = (hex, alpha = 1) => {
                 <div class="m3-header-titles">
                     <div class="d-flex align-center ga-2 mb-1 flex-wrap">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-tag-multiple-outline</v-icon>
+                            <v-icon size="13" class="mr-2 text-emerald-700">mdi-tag-multiple-outline</v-icon>
                             Taksonomi Portal
                         </span>
                         <span class="m3-header-badge m3-header-badge--count">
@@ -242,7 +242,7 @@ const hexToRgba = (hex, alpha = 1) => {
                             <!-- Count -->
                             <td class="col-count">
                                 <span class="m3-count-badge">
-                                    <v-icon size="14" class="mr-1 text-slate-400">mdi-newspaper-variant-outline</v-icon>
+                                    <v-icon size="14" class="mr-1.5 text-slate-400">mdi-newspaper-variant-outline</v-icon>
                                     {{ cat.articles_count ?? 0 }} artikel
                                 </span>
                             </td>
@@ -289,7 +289,7 @@ const hexToRgba = (hex, alpha = 1) => {
                                     </h3>
                                     <p class="text-xs text-slate-500 mb-4">Tambahkan rubrikasi artikel untuk mengelompokkan konten portal.</p>
                                     <button type="button" class="m3-btn-filled" @click="openCreate">
-                                        <v-icon size="16" class="mr-1.5">mdi-plus</v-icon>
+                                        <v-icon size="16" class="mr-2">mdi-plus</v-icon>
                                         Tambah Kategori Baru
                                     </button>
                                 </div>
@@ -471,11 +471,12 @@ const hexToRgba = (hex, alpha = 1) => {
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -505,6 +506,7 @@ const hexToRgba = (hex, alpha = 1) => {
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
@@ -744,11 +746,12 @@ const hexToRgba = (hex, alpha = 1) => {
 .m3-count-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #f8fafc;
     color: #334155;
     font-size: 12px;
     font-weight: 600;
-    padding: 4px 10px;
+    padding: 4px 11px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
 }

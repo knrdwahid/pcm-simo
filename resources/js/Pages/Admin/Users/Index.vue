@@ -196,7 +196,7 @@ const formatDate = (dateString) => {
                 <div class="m3-header-titles">
                     <div class="d-flex align-center ga-2 mb-1 flex-wrap">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-account-group-outline</v-icon>
+                            <v-icon size="13" class="mr-2 text-emerald-700">mdi-account-group-outline</v-icon>
                             Otoritas &amp; Akun
                         </span>
                         <span class="m3-header-badge m3-header-badge--count">
@@ -365,7 +365,7 @@ const formatDate = (dateString) => {
                                         borderColor: getRoleMeta(user.role).border,
                                     }"
                                 >
-                                    <v-icon size="14" class="mr-1" :color="getRoleMeta(user.role).color">
+                                    <v-icon size="14" class="mr-1.5" :color="getRoleMeta(user.role).color">
                                         {{ getRoleMeta(user.role).icon }}
                                     </v-icon>
                                     {{ getRoleMeta(user.role).label }}
@@ -432,7 +432,7 @@ const formatDate = (dateString) => {
                                     </h3>
                                     <p class="text-xs text-slate-500 mb-4">Tambahkan akun pengurus untuk mendelegasikan wewenang.</p>
                                     <button type="button" class="m3-btn-filled" @click="openCreate">
-                                        <v-icon size="16" class="mr-1.5">mdi-account-plus-outline</v-icon>
+                                        <v-icon size="16" class="mr-2">mdi-account-plus-outline</v-icon>
                                         Tambah Pengguna Baru
                                     </button>
                                 </div>
@@ -590,7 +590,7 @@ const formatDate = (dateString) => {
                                 width="2"
                                 class="mr-2"
                             />
-                            <v-icon v-else size="18" class="mr-1.5">mdi-check</v-icon>
+                            <v-icon v-else size="18" class="mr-2">mdi-check</v-icon>
                             <span>{{ form.processing ? 'Menyimpan...' : (isEdit ? 'Perbarui Pengguna' : 'Simpan Pengguna') }}</span>
                         </button>
                     </div>
@@ -630,11 +630,12 @@ const formatDate = (dateString) => {
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -664,6 +665,7 @@ const formatDate = (dateString) => {
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
@@ -931,7 +933,8 @@ const formatDate = (dateString) => {
 .m3-role-tag {
     display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
+    gap: 6px;
+    padding: 4px 11px;
     border-radius: 9999px;
     font-size: 11.5px;
     font-weight: 700;
@@ -1224,6 +1227,7 @@ const formatDate = (dateString) => {
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 10px 18px;
     border-radius: 14px;
     border: none;
@@ -1239,6 +1243,7 @@ const formatDate = (dateString) => {
 .m3-btn-filled {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 10px 22px;
     border-radius: 14px;
     border: none;

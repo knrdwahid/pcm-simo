@@ -344,7 +344,7 @@ const getReferrerBadgeClass = (type) => {
                         @click="toggleAutoRefresh"
                         :title="isAutoRefresh ? 'Jeda pembaruan otomatis' : 'Aktifkan pembaruan otomatis'"
                     >
-                        <v-icon size="16" class="mr-1.5" :class="{ 'spin-slow': isAutoRefresh }">
+                        <v-icon size="16" class="mr-2" :class="{ 'spin-slow': isAutoRefresh }">
                             mdi-autorenew
                         </v-icon>
                         <span>Auto-Refresh: {{ isAutoRefresh ? '10 dtk' : 'Mati' }}</span>
@@ -364,16 +364,16 @@ const getReferrerBadgeClass = (type) => {
                             size="14"
                             width="2"
                             color="#006837"
-                            class="mr-1.5"
+                            class="mr-2"
                         />
-                        <v-icon v-else size="16" class="mr-1.5">mdi-refresh</v-icon>
+                        <v-icon v-else size="16" class="mr-2">mdi-refresh</v-icon>
                         <span>Segarkan</span>
                     </button>
 
                     <!-- Buka Website Publik -->
                     <a href="/" target="_blank" class="text-decoration-none">
                         <button class="m3-fab-extended">
-                            <v-icon size="18" class="mr-1.5">mdi-open-in-new</v-icon>
+                            <v-icon size="18" class="mr-2">mdi-open-in-new</v-icon>
                             <span>Buka Portal Publik</span>
                         </button>
                     </a>
@@ -476,7 +476,7 @@ const getReferrerBadgeClass = (type) => {
                             <div class="d-flex align-center ga-2">
                                 <h2 class="period-section-title">Filter Periode Analisis</h2>
                                 <span v-if="isChangingPeriod" class="period-loading-tag">
-                                    <v-progress-circular indeterminate size="12" width="2" color="#006837" class="mr-1" />
+                                    <v-progress-circular indeterminate size="12" width="2" color="#006837" class="mr-2" />
                                     Memuat data...
                                 </span>
                             </div>
@@ -488,7 +488,7 @@ const getReferrerBadgeClass = (type) => {
 
                     <!-- Range Badge & Compare Tag -->
                     <div class="period-info-badge">
-                        <v-icon size="14" class="text-emerald-700 mr-1.5">mdi-calendar-range</v-icon>
+                        <v-icon size="14" class="text-emerald-700 mr-2">mdi-calendar-range</v-icon>
                         <span class="font-bold text-slate-800">{{ period.rangeLabel || period.label }}</span>
                         <span class="period-compare-pill">Bandingkan: {{ period.compareLabel }}</span>
                     </div>
@@ -548,7 +548,7 @@ const getReferrerBadgeClass = (type) => {
                                 :disabled="!customStart || !customEnd || isChangingPeriod"
                                 @click="applyCustomRange"
                             >
-                                <v-icon size="14" class="mr-1">mdi-filter-check</v-icon>
+                                <v-icon size="14" class="mr-2">mdi-filter-check</v-icon>
                                 <span>Terapkan Rentang</span>
                             </button>
                         </div>
@@ -644,7 +644,7 @@ const getReferrerBadgeClass = (type) => {
                     <div>
                         <div class="d-flex align-center ga-2 mb-1">
                             <span class="m3-header-badge">
-                                <v-icon size="13" class="mr-1 text-emerald-700">mdi-chart-areaspline</v-icon>
+                                <v-icon size="13" class="mr-2 text-emerald-700">mdi-chart-areaspline</v-icon>
                                 Tren Kunjungan · {{ period.label }}
                             </span>
                         </div>
@@ -770,7 +770,7 @@ const getReferrerBadgeClass = (type) => {
                     <div>
                         <div class="d-flex align-center ga-2 mb-1">
                             <span class="m3-header-badge">
-                                <v-icon size="13" class="mr-1 text-emerald-700">mdi-clock-time-four-outline</v-icon>
+                                <v-icon size="13" class="mr-2 text-emerald-700">mdi-clock-time-four-outline</v-icon>
                                 Distribusi Jam
                             </span>
                         </div>
@@ -818,7 +818,7 @@ const getReferrerBadgeClass = (type) => {
                     <div>
                         <div class="d-flex align-center ga-2 mb-1">
                             <span class="m3-header-badge">
-                                <v-icon size="13" class="mr-1 text-emerald-700">mdi-star-outline</v-icon>
+                                <v-icon size="13" class="mr-2 text-emerald-700">mdi-star-outline</v-icon>
                                 Paling Banyak Dibaca
                             </span>
                         </div>
@@ -994,7 +994,7 @@ const getReferrerBadgeClass = (type) => {
                 <div>
                     <div class="d-flex align-center ga-2 mb-1">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-map-marker-radius-outline</v-icon>
+                            <v-icon size="13" class="mr-2 text-emerald-700">mdi-map-marker-radius-outline</v-icon>
                             Sebaran Geografis &amp; Zonasi
                         </span>
                     </div>
@@ -1003,11 +1003,11 @@ const getReferrerBadgeClass = (type) => {
                 </div>
                 <div class="d-flex align-center ga-2 flex-wrap">
                     <span class="m3-stat-tag">
-                        <v-icon size="14" class="mr-1 text-emerald-700">mdi-flag-outline</v-icon>
+                        <v-icon size="14" class="mr-2 text-emerald-700">mdi-flag-outline</v-icon>
                         {{ countryStats.length }} Negara Terdeteksi
                     </span>
                     <span class="m3-stat-tag">
-                        <v-icon size="14" class="mr-1 text-blue-600">mdi-city-variant-outline</v-icon>
+                        <v-icon size="14" class="mr-2 text-blue-600">mdi-city-variant-outline</v-icon>
                         {{ provinceStats.length }} Provinsi
                     </span>
                 </div>
@@ -1183,7 +1183,7 @@ const getReferrerBadgeClass = (type) => {
                             <!-- Device & Platform -->
                             <td>
                                 <span class="device-badge">
-                                    <v-icon size="13" class="mr-1 text-slate-500">{{ getDeviceIcon(visit.device_type) }}</v-icon>
+                                    <v-icon size="13" class="mr-2 text-slate-500">{{ getDeviceIcon(visit.device_type) }}</v-icon>
                                     {{ visit.platform || 'Desktop' }}
                                 </span>
                             </td>
@@ -1251,11 +1251,12 @@ const getReferrerBadgeClass = (type) => {
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -1315,6 +1316,7 @@ const getReferrerBadgeClass = (type) => {
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13px;
@@ -1337,6 +1339,7 @@ const getReferrerBadgeClass = (type) => {
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 9px 16px;
     border-radius: 9999px;
     border: 1px solid #e2e8f0;

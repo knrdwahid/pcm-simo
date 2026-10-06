@@ -171,9 +171,9 @@ onUnmounted(() => {
                         <div class="sidebar-user-meta">
                             <div class="sidebar-user-name">{{ user.name }}</div>
                             <div :class="['sidebar-user-role', userRoleBadgeClass]">
-                                <v-icon v-if="user.role === 'superadmin'" size="11" class="mr-1">mdi-shield-crown</v-icon>
-                                <v-icon v-else-if="user.role === 'admin'" size="11" class="mr-1">mdi-shield-account</v-icon>
-                                <v-icon v-else size="11" class="mr-1">mdi-feather</v-icon>
+                                <v-icon v-if="user.role === 'superadmin'" size="11" class="mr-1.5">mdi-shield-crown</v-icon>
+                                <v-icon v-else-if="user.role === 'admin'" size="11" class="mr-1.5">mdi-shield-account</v-icon>
+                                <v-icon v-else size="11" class="mr-1.5">mdi-feather</v-icon>
                                 <span>{{ userRoleLabel }}</span>
                             </div>
                         </div>
@@ -280,7 +280,7 @@ onUnmounted(() => {
 .menu-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     padding: 11px 16px;
     border-radius: 9999px;
     font-size: 13.5px;
@@ -315,7 +315,7 @@ onUnmounted(() => {
 .sidebar-user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 12px;
 }
 
@@ -350,7 +350,8 @@ onUnmounted(() => {
     font-size: 11px;
     display: inline-flex;
     align-items: center;
-    padding: 1px 6px;
+    gap: 5px;
+    padding: 2px 7px;
     border-radius: 4px;
     font-weight: 500;
     margin-top: 2px;
@@ -380,8 +381,8 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px;
+    gap: 9px;
+    padding: 9px 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     background: transparent;

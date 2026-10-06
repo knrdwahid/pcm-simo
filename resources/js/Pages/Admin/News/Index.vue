@@ -137,7 +137,7 @@ const doDelete = () => {
                 <div class="m3-header-titles">
                     <div class="d-flex align-center ga-2 mb-1 flex-wrap">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
+                            <v-icon size="13" class="mr-2 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
                             Warta &amp; Publikasi
                         </span>
                         <span class="m3-header-badge m3-header-badge--count">
@@ -389,11 +389,11 @@ const doDelete = () => {
                                     </Link>
                                     <div class="article-meta">
                                         <span class="meta-item">
-                                            <v-icon size="13" class="meta-icon">mdi-eye-outline</v-icon>
+                                            <v-icon size="13" class="meta-icon mr-1">mdi-eye-outline</v-icon>
                                             {{ (art.views || 0).toLocaleString('id-ID') }} pembaca
                                         </span>
                                         <span v-if="art.is_featured" class="headline-pill">
-                                            <v-icon size="11" class="mr-0.5">mdi-star</v-icon>
+                                            <v-icon size="11" class="mr-1.5">mdi-star</v-icon>
                                             Headline
                                         </span>
                                     </div>
@@ -422,7 +422,7 @@ const doDelete = () => {
                             <td class="col-date">
                                 <div class="date-cell">
                                     <div class="date-primary">
-                                        <v-icon size="14" class="mr-1 text-slate-400">mdi-calendar-blank-outline</v-icon>
+                                        <v-icon size="14" class="mr-2 text-slate-400">mdi-calendar-blank-outline</v-icon>
                                         {{ formatFullDate(art.published_at).date }}
                                     </div>
                                     <div class="date-secondary">
@@ -499,7 +499,7 @@ const doDelete = () => {
                                         </button>
                                         <Link href="/dashboard/news/create" class="text-decoration-none">
                                             <button class="empty-btn-create">
-                                                <v-icon size="16" class="mr-1">mdi-plus</v-icon>
+                                                <v-icon size="16" class="mr-2">mdi-plus</v-icon>
                                                 Tambah Berita Baru
                                             </button>
                                         </Link>
@@ -571,7 +571,7 @@ const doDelete = () => {
                             class="m3-btn-filled m3-btn-filled--danger"
                             @click="doDelete"
                         >
-                            <v-icon size="16" class="mr-1">mdi-trash-can-outline</v-icon>
+                            <v-icon size="16" class="mr-2">mdi-trash-can-outline</v-icon>
                             <span>Ya, Hapus Sekarang</span>
                         </button>
                     </div>
@@ -612,11 +612,12 @@ const doDelete = () => {
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -646,6 +647,7 @@ const doDelete = () => {
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
@@ -907,6 +909,7 @@ const doDelete = () => {
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 9px 18px;
     border-radius: 12px;
     border: none;
@@ -922,6 +925,7 @@ const doDelete = () => {
 .m3-btn-filled {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 9px 20px;
     border-radius: 12px;
     border: none;
@@ -1358,7 +1362,7 @@ const doDelete = () => {
 .meta-item {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 5px;
     font-size: 11px;
     color: #94a3b8;
     font-weight: 500;
@@ -1384,8 +1388,8 @@ const doDelete = () => {
 .category-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
+    gap: 8px;
+    padding: 4px 12px;
     border-radius: 9999px;
     font-size: 11.5px;
     font-weight: 600;
@@ -1394,8 +1398,8 @@ const doDelete = () => {
 }
 
 .category-dot {
-    width: 6px;
-    height: 6px;
+    width: 6.5px;
+    height: 6.5px;
     border-radius: 9999px;
     flex-shrink: 0;
 }
@@ -1418,7 +1422,7 @@ const doDelete = () => {
 .date-secondary {
     font-size: 11px;
     color: #94a3b8;
-    padding-left: 18px;
+    padding-left: 22px;
 }
 
 /* Status Pill */

@@ -118,7 +118,7 @@ const statCards = [
                 <div class="m3-header-titles">
                     <div class="d-flex align-center ga-2 mb-1 flex-wrap">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-view-dashboard-outline</v-icon>
+                            <v-icon size="13" class="mr-1.5 text-emerald-700">mdi-view-dashboard-outline</v-icon>
                             Portal Informasi &amp; Dakwah
                         </span>
                         <span class="m3-header-badge m3-header-badge--count">
@@ -134,19 +134,19 @@ const statCards = [
                 <div class="m3-header-actions">
                     <Link href="/dashboard/monitoring" class="text-decoration-none">
                         <button class="m3-btn-tonal">
-                            <v-icon size="18" class="mr-1.5 text-emerald-700">mdi-chart-timeline-variant-shimmer</v-icon>
+                            <v-icon size="18" class="mr-2 text-emerald-700">mdi-chart-timeline-variant-shimmer</v-icon>
                             <span>Monitoring Pengunjung</span>
                         </button>
                     </Link>
                     <Link href="/dashboard/aum" class="text-decoration-none">
                         <button class="m3-btn-tonal">
-                            <v-icon size="18" class="mr-1.5 text-emerald-700">mdi-domain</v-icon>
+                            <v-icon size="18" class="mr-2 text-emerald-700">mdi-domain</v-icon>
                             <span>Kelola AUM &amp; Ortom</span>
                         </button>
                     </Link>
                     <Link href="/dashboard/news/create" class="text-decoration-none">
                         <button class="m3-fab-extended">
-                            <v-icon size="20" class="mr-1.5">mdi-plus</v-icon>
+                            <v-icon size="20" class="mr-2">mdi-plus</v-icon>
                             <span>Tulis Berita Baru</span>
                         </button>
                     </Link>
@@ -195,7 +195,7 @@ const statCards = [
                 <div>
                     <div class="d-flex align-center ga-2 mb-1">
                         <span class="m3-header-badge">
-                            <v-icon size="13" class="mr-1 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
+                            <v-icon size="13" class="mr-1.5 text-emerald-700">mdi-newspaper-variant-outline</v-icon>
                             Pembaruan Terkini
                         </span>
                     </div>
@@ -205,7 +205,7 @@ const statCards = [
                 <Link href="/dashboard/news" class="text-decoration-none">
                     <button class="m3-btn-tonal">
                         <span>Buka Manajemen Berita</span>
-                        <v-icon size="16" class="ml-1.5">mdi-arrow-right</v-icon>
+                        <v-icon size="16" class="ml-2">mdi-arrow-right</v-icon>
                     </button>
                 </Link>
             </div>
@@ -248,8 +248,8 @@ const statCards = [
                                     </Link>
                                     <div class="article-meta">
                                         <span class="meta-views">
-                                            <v-icon size="12" class="mr-0.5">mdi-eye-outline</v-icon>
-                                            {{ (art.views || 0).toLocaleString('id-ID') }} pembaca
+                                            <v-icon size="13" class="mr-1.5 text-slate-400">mdi-eye-outline</v-icon>
+                                            <span>{{ (art.views || 0).toLocaleString('id-ID') }} pembaca</span>
                                         </span>
                                         <span v-if="art.is_featured" class="headline-tag">
                                             ★ Headline
@@ -355,11 +355,12 @@ const statCards = [
 .m3-header-badge {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     background: #ecfdf5;
     color: #065f46;
     font-size: 11.5px;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 12px;
     border-radius: 9999px;
     border: 1px solid #a7f3d0;
 }
@@ -397,6 +398,7 @@ const statCards = [
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     font-size: 13.5px;
@@ -418,6 +420,7 @@ const statCards = [
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     padding: 10px 18px;
     border-radius: 9999px;
     border: 1px solid #e2e8f0;
@@ -526,8 +529,8 @@ const statCards = [
 .m3-metric-active-pill {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 2px 8px;
+    gap: 6.5px;
+    padding: 2.5px 9px;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
@@ -741,6 +744,7 @@ const statCards = [
     color: #64748b;
     display: inline-flex;
     align-items: center;
+    gap: 4px;
 }
 
 .headline-tag {
@@ -748,7 +752,7 @@ const statCards = [
     font-weight: 700;
     color: #d97706;
     background: #fef3c7;
-    padding: 1px 6px;
+    padding: 2px 7px;
     border-radius: 4px;
 }
 
@@ -756,8 +760,8 @@ const statCards = [
 .category-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
+    gap: 8px;
+    padding: 4px 12px;
     border-radius: 9999px;
     font-size: 11.5px;
     font-weight: 600;
@@ -767,8 +771,8 @@ const statCards = [
 }
 
 .category-dot {
-    width: 6px;
-    height: 6px;
+    width: 6.5px;
+    height: 6.5px;
     border-radius: 9999px;
     flex-shrink: 0;
 }
@@ -784,8 +788,8 @@ const statCards = [
 .status-pill {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
+    gap: 7px;
+    padding: 4px 12px;
     border-radius: 9999px;
     font-size: 11px;
     font-weight: 700;

@@ -134,7 +134,7 @@ const submit = (overrideStatus = null) => {
                 <!-- Breadcrumbs -->
                 <nav class="breadcrumb-trail">
                     <Link href="/dashboard/news" class="trail-item trail-link">
-                        <v-icon size="14" class="mr-1 text-slate-400">mdi-newspaper-variant-outline</v-icon>
+                        <v-icon size="14" class="mr-2 text-slate-400">mdi-newspaper-variant-outline</v-icon>
                         <span>Berita</span>
                     </Link>
                     <v-icon size="13" class="trail-separator">mdi-chevron-right</v-icon>
@@ -160,7 +160,7 @@ const submit = (overrideStatus = null) => {
             <!-- Header Quick Action Buttons -->
             <div class="header-actions">
                 <Link href="/dashboard/news" class="btn-secondary-action">
-                    <v-icon size="16" class="mr-1">mdi-arrow-left</v-icon>
+                    <v-icon size="16" class="mr-2">mdi-arrow-left</v-icon>
                     <span>Kembali</span>
                 </Link>
 
@@ -172,7 +172,7 @@ const submit = (overrideStatus = null) => {
                     @click="submit('draft')"
                     title="Simpan sebagai draft terlebih dahulu"
                 >
-                    <v-icon size="16" class="mr-1">mdi-file-document-edit-outline</v-icon>
+                    <v-icon size="16" class="mr-2">mdi-file-document-edit-outline</v-icon>
                     <span>Simpan Draft</span>
                 </button>
 
@@ -190,7 +190,7 @@ const submit = (overrideStatus = null) => {
                         color="white"
                         class="mr-2"
                     />
-                    <v-icon v-else size="17" class="mr-1.5">mdi-check-circle-outline</v-icon>
+                    <v-icon v-else size="17" class="mr-2">mdi-check-circle-outline</v-icon>
                     <span>{{ isEdit ? 'Simpan Perubahan' : (form.status === 'published' ? 'Terbitkan Berita' : 'Simpan Draft') }}</span>
                 </button>
             </div>
@@ -397,7 +397,7 @@ const submit = (overrideStatus = null) => {
                                 color="white"
                                 class="mr-2"
                             />
-                            <v-icon v-else size="18" class="mr-1.5">mdi-check-circle-outline</v-icon>
+                            <v-icon v-else size="18" class="mr-2">mdi-check-circle-outline</v-icon>
                             <span>{{ isEdit ? 'Simpan Perubahan' : (form.status === 'published' ? 'Terbitkan Berita Sekarang' : 'Simpan sebagai Draft') }}</span>
                         </button>
                     </div>
@@ -434,7 +434,7 @@ const submit = (overrideStatus = null) => {
                                     class="preview-btn preview-btn--change"
                                     @click="triggerFileInput"
                                 >
-                                    <v-icon size="15" class="mr-1">mdi-camera-retake-outline</v-icon>
+                                    <v-icon size="15" class="mr-2">mdi-camera-retake-outline</v-icon>
                                     <span>Ganti Foto</span>
                                 </button>
                                 <button
@@ -470,7 +470,7 @@ const submit = (overrideStatus = null) => {
 
                         <!-- Compression Notice -->
                         <div class="compression-notice mt-3">
-                            <v-icon size="14" color="#006837" class="mr-1.5 flex-shrink-0">mdi-lightning-bolt-circle</v-icon>
+                            <v-icon size="14" color="#006837" class="mr-2 flex-shrink-0">mdi-lightning-bolt-circle</v-icon>
                             <span>Otomatis dioptimasi & dikonversi ke format <strong>WebP</strong> untuk akses cepat.</span>
                         </div>
                     </div>
@@ -575,6 +575,7 @@ const submit = (overrideStatus = null) => {
 .btn-secondary-action {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: #ffffff;
     color: #475569;
     border: 1px solid #cbd5e1;
@@ -598,6 +599,7 @@ const submit = (overrideStatus = null) => {
 .btn-primary-action {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
     border: none;
