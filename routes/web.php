@@ -20,6 +20,10 @@ Route::get('/berita/{slug}', [PublicController::class, 'showArticle'])->name('ar
 
 // Fallback untuk serving file storage jika symlink cPanel hosting bermasalah / nonaktif
 Route::get('/storage/{path}', function (string $path) {
+    if (str_contains($path, '..') || str_starts_with(basename($path), '.') || str_ends_with(strtolower($path), '.php')) {
+        abort(404);
+    }
+
     $storageRoot = realpath(storage_path('app/public'));
     $filePath = realpath(storage_path('app/public/' . $path));
 

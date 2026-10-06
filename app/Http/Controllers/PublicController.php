@@ -157,7 +157,7 @@ class PublicController extends Controller
 
     public function showArticle(string $slug): Response
     {
-        $article = Article::with(['category', 'user'])
+        $article = Article::with(['category', 'user:id,name'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();

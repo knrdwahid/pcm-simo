@@ -36,14 +36,22 @@ class AdminUserSeeder extends Seeder
         $superAdminUser = null;
 
         foreach ($users as $data) {
-            $user = User::updateOrCreate(
-                ['email' => $data['email']],
-                [
+            $existing = User::where('email', $data['email'])->first();
+
+            if ($existing) {
+                $existing->update([
                     'name' => $data['name'],
                     'role' => $data['role'],
+                ]);
+                $user = $existing;
+            } else {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'role' => $data['role'],
                     'password' => Hash::make($data['password']),
-                ]
-            );
+                ]);
+            }
 
             if ($data['role'] === 'superadmin') {
                 $superAdminUser = $user;
