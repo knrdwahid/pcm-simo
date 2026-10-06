@@ -468,7 +468,7 @@ const getReferrerBadgeClass = (type) => {
         <section class="period-filter-section mb-6" aria-label="Filter Periode Analisis">
             <div class="m3-table-card period-card">
                 <div class="period-card-header">
-                    <div class="d-flex align-center ga-2.5 flex-wrap">
+                    <div class="d-flex align-center ga-3 flex-wrap">
                         <div class="header-icon-box" style="background: #ecfdf5; color: #006837;">
                             <v-icon size="20">mdi-calendar-clock</v-icon>
                         </div>
@@ -1068,14 +1068,14 @@ const getReferrerBadgeClass = (type) => {
                     </div>
                     <div class="geo-panel-body">
                         <div v-for="c in countryStats" :key="c.code" class="country-row">
-                            <div class="d-flex align-center ga-2.5">
+                            <div class="d-flex align-center ga-3">
                                 <span class="country-flag-icon">{{ c.flag }}</span>
                                 <div class="d-flex flex-column">
                                     <span class="text-xs font-semibold text-slate-800">{{ c.country }}</span>
                                     <span class="text-[10px] text-slate-400 font-mono tracking-wider">{{ c.code }}</span>
                                 </div>
                             </div>
-                            <div class="d-flex align-center ga-2.5">
+                            <div class="d-flex align-center ga-3">
                                 <div class="country-bar-inline">
                                     <div class="country-bar-fill" :style="{ width: `${Math.min(c.percentage * 1.05, 100)}%` }"></div>
                                 </div>

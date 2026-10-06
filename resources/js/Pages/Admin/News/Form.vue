@@ -314,7 +314,7 @@ const submit = (overrideStatus = null) => {
                                     :class="{ 'custom-dropdown-trigger--open': isCategoryDropdownOpen }"
                                     @click="toggleCategoryDropdown"
                                 >
-                                    <div class="d-flex align-center ga-2 text-truncate">
+                                    <div class="dropdown-trigger-selected">
                                         <span
                                             class="category-color-dot"
                                             :style="{ backgroundColor: selectedCategoryObj?.color || '#006837' }"
@@ -342,7 +342,7 @@ const submit = (overrideStatus = null) => {
                                             :class="['dropdown-item', { 'dropdown-item--selected': form.category_id === cat.id }]"
                                             @click="selectCategory(cat)"
                                         >
-                                            <div class="d-flex align-center ga-2.5">
+                                            <div class="dropdown-item-left">
                                                 <span
                                                     class="category-color-dot"
                                                     :style="{ backgroundColor: cat.color || '#006837' }"
@@ -923,11 +923,36 @@ const submit = (overrideStatus = null) => {
     transform: rotate(180deg);
 }
 
+.dropdown-trigger-selected {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
 .category-color-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 9999px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95), 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.4;
 }
 
 .custom-dropdown-menu {
