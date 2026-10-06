@@ -41,13 +41,14 @@ html {
 }
 
 #nprogress .bar {
-    background: #10b981 !important; /* Emerald 500 */
+    background: linear-gradient(90deg, #006837 0%, #059669 50%, #34d399 100%) !important;
     position: fixed;
     z-index: 99999;
     top: 0;
     left: 0;
     width: 100%;
     height: 3px !important;
+    box-shadow: 0 0 10px rgba(5, 150, 105, 0.7);
 }
 
 #nprogress .peg {
@@ -56,7 +57,7 @@ html {
     right: 0px;
     width: 100px;
     height: 100%;
-    box-shadow: 0 0 10px #10b981, 0 0 5px #10b981;
+    box-shadow: 0 0 14px #34d399, 0 0 8px #10b981;
     opacity: 1;
     transform: rotate(3deg) translate(0px, -4px);
 }
@@ -86,9 +87,14 @@ html {
     border-radius: 20px !important;
     padding: 24px 28px !important;
     background: #ffffff !important;
-    box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.2) !important;
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18) !important;
     border: 1px solid #e2e8f0 !important;
     font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif !important;
+}
+
+.swal2-container.swal2-backdrop-show {
+    backdrop-filter: blur(4px) !important;
+    background: rgba(15, 23, 42, 0.45) !important;
 }
 
 .swal2-pcm-title {
@@ -141,4 +147,52 @@ html {
 .swal2-pcm-cancel:hover {
     background: #e2e8f0 !important;
     color: #0f172a !important;
+}
+
+/* Toast styling */
+.swal2-pcm-toast {
+    border-radius: 14px !important;
+    padding: 12px 18px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.15) !important;
+    font-family: 'Plus Jakarta Sans', 'Poppins', sans-serif !important;
+}
+
+.swal2-pcm-toast .swal2-title {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    margin: 0 8px !important;
+}
+
+/* SweetAlert2 Micro-Animations */
+@keyframes swalPcmZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes swalPcmZoomOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.94) translateY(6px);
+    }
+}
+
+.swal2-pcm-show {
+    animation: swalPcmZoomIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.swal2-pcm-hide {
+    animation: swalPcmZoomOut 0.18s cubic-bezier(0.4, 0, 1, 1) forwards !important;
 }

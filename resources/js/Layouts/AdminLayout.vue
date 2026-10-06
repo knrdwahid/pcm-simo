@@ -1,10 +1,24 @@
 <script setup>
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import showAlert from '@/Utils/sweetalert';
 
 const drawer = ref(true);
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: 'Admin' });
+
+// Auto-trigger SweetAlert2 on backend flash messages
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) {
+        showAlert.toast(flash.success, 'success');
+    } else if (flash?.error) {
+        showAlert.error('Terjadi Kesalahan', flash.error);
+    } else if (flash?.warning) {
+        showAlert.warning('Perhatian', flash.warning);
+    } else if (flash?.info) {
+        showAlert.toast(flash.info, 'info');
+    }
+}, { deep: true, immediate: true });
 
 const mainMenu = [
     { title: 'Dashboard', icon: 'mdi-view-dashboard-outline', href: '/dashboard', activeRoute: '/dashboard' },
@@ -177,7 +191,9 @@ onUnmounted(() => {
             <v-app-bar-nav-icon @click="drawer = !drawer" class="d-lg-none" />
 
             <div class="topbar-title">
-                <span class="topbar-title-page">{{ pageTitle }}</span>
+                <Transition name="title-fade-slide" mode="out-in">
+                    <span :key="pageTitle" class="topbar-title-page">{{ pageTitle }}</span>
+                </Transition>
             </div>
 
             <v-spacer />
@@ -198,33 +214,13 @@ onUnmounted(() => {
 
         <!-- Main Content -->
         <v-main class="main-content">
-            <!-- Flash Messages -->
-            <div v-if="flashSuccess || flashError" class="flash-container">
-                <v-alert
-                    v-if="flashSuccess"
-                    type="success"
-                    variant="tonal"
-                    closable
-                    class="mb-3 text-sm"
-                    density="compact"
-                    rounded="lg"
-                >
-                    {{ flashSuccess }}
-                </v-alert>
-                <v-alert
-                    v-if="flashError"
-                    type="error"
-                    variant="tonal"
-                    closable
-                    class="mb-3 text-sm"
-                    density="compact"
-                    rounded="lg"
-                >
-                    {{ flashError }}
-                </v-alert>
+            <div class="page-viewport">
+                <Transition name="page-fade-slide" mode="out-in" appear>
+                    <div :key="page.url.split('?')[0]" class="page-content-wrapper">
+                        <slot />
+                    </div>
+                </Transition>
             </div>
-
-            <slot />
         </v-main>
     </v-app>
 </template>
@@ -291,7 +287,7 @@ onUnmounted(() => {
     font-weight: 500;
     color: rgba(255, 255, 255, 0.65);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     margin-bottom: 4px;
     position: relative;
 }
@@ -299,14 +295,15 @@ onUnmounted(() => {
 .menu-item:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.08);
-    transform: translateX(2px);
+    transform: translateX(3px);
 }
 
 .menu-item--active {
     background: linear-gradient(135deg, #006837 0%, #008744 100%) !important;
     color: #ffffff !important;
     font-weight: 600;
-    box-shadow: 0 4px 16px rgba(0, 104, 55, 0.4);
+    box-shadow: 0 4px 18px rgba(0, 104, 55, 0.45);
+    transform: translateX(2px);
 }
 
 /* ── Sidebar User ── */
@@ -469,9 +466,57 @@ onUnmounted(() => {
 /* ── Main ── */
 .main-content {
     background: #f7f8fa !important;
+    min-height: 100vh;
 }
 
-.flash-container {
-    padding: 16px 24px 0;
+/* ── Page Viewport & Transition Animations ── */
+.page-viewport {
+    position: relative;
+    min-height: calc(100vh - 64px);
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.page-content-wrapper {
+    width: 100%;
+    will-change: opacity, transform;
+}
+
+/* Page transition: soft fade & gentle upward glide */
+.page-fade-slide-enter-active {
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-fade-slide-leave-active {
+    transition: opacity 0.16s cubic-bezier(0.4, 0, 1, 1),
+                transform 0.16s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.page-fade-slide-enter-from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.996);
+}
+
+.page-fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+/* Topbar page title transition */
+.title-fade-slide-enter-active,
+.title-fade-slide-leave-active {
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+}
+
+.title-fade-slide-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.title-fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
 }
 </style>

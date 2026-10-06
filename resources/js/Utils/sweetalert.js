@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 // Custom SweetAlert instance tailored to PCM Simo branding
 const customSwal = Swal.mixin({
@@ -10,6 +11,12 @@ const customSwal = Swal.mixin({
         cancelButton: 'swal2-pcm-cancel',
     },
     buttonsStyling: false,
+    showClass: {
+        popup: 'swal2-pcm-show',
+    },
+    hideClass: {
+        popup: 'swal2-pcm-hide',
+    },
 });
 
 export const showAlert = {
@@ -43,6 +50,16 @@ export const showAlert = {
         });
     },
 
+    info: (title, text = '') => {
+        return customSwal.fire({
+            icon: 'info',
+            iconColor: '#0284c7',
+            title,
+            text,
+            confirmButtonText: 'Baik',
+        });
+    },
+
     confirm: async (title, text = '', confirmButtonText = 'Ya, Lanjutkan') => {
         const result = await customSwal.fire({
             icon: 'warning',
@@ -62,8 +79,17 @@ export const showAlert = {
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 3000,
+            timer: 3500,
             timerProgressBar: true,
+            customClass: {
+                popup: 'swal2-pcm-toast',
+            },
+            showClass: {
+                popup: 'swal2-pcm-show',
+            },
+            hideClass: {
+                popup: 'swal2-pcm-hide',
+            },
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer);
                 toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -71,7 +97,7 @@ export const showAlert = {
         });
         return Toast.fire({
             icon,
-            iconColor: icon === 'success' ? '#006837' : undefined,
+            iconColor: icon === 'success' ? '#006837' : (icon === 'info' ? '#0284c7' : undefined),
             title,
         });
     },
