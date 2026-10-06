@@ -1,8 +1,8 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 defineOptions({ layout: AdminLayout });
 
@@ -22,6 +22,32 @@ const props = defineProps({
             totalPageviews: 0,
             totalUnique: 0,
             timestamp: '',
+        }),
+    },
+    period: {
+        type: Object,
+        default: () => ({
+            key: 'last_7_days',
+            label: '7 Hari Terakhir',
+            rangeLabel: '',
+            compareLabel: '',
+            granularity: 'day',
+            start: '',
+            end: '',
+            options: [],
+        }),
+    },
+    periodMetrics: {
+        type: Object,
+        default: () => ({
+            pageviews: 0,
+            unique: 0,
+            prevPageviews: 0,
+            prevUnique: 0,
+            pageviewsGrowth: 0,
+            uniqueGrowth: 0,
+            avgPerDay: 0,
+            pagesPerVisitor: 0,
         }),
     },
     dailyTrend: { type: Array, default: () => [] },
@@ -44,6 +70,60 @@ const isRefreshing = ref(false);
 const lastUpdatedTime = ref(props.metrics?.timestamp ? `${props.metrics.timestamp} WIB` : 'Baru saja');
 const activeChartMetric = ref('pageviews'); // 'pageviews' or 'unique'
 const hoveredPoint = ref(null);
+
+// Reactive state for period filtering
+const selectedPeriod = ref(props.period?.key || 'last_7_days');
+const customStart = ref(props.period?.start || '');
+const customEnd = ref(props.period?.end || '');
+const showCustomPicker = ref(props.period?.key === 'custom');
+const isChangingPeriod = ref(false);
+
+watch(() => props.period, (newP) => {
+    if (newP) {
+        selectedPeriod.value = newP.key || 'last_7_days';
+        customStart.value = newP.start || '';
+        customEnd.value = newP.end || '';
+        showCustomPicker.value = newP.key === 'custom';
+    }
+}, { deep: true });
+
+const changePeriod = (key) => {
+    selectedPeriod.value = key;
+    if (key === 'custom') {
+        showCustomPicker.value = true;
+        return;
+    }
+    showCustomPicker.value = false;
+    applyFilter({ period: key });
+};
+
+const applyCustomRange = () => {
+    if (!customStart.value || !customEnd.value) return;
+    applyFilter({
+        period: 'custom',
+        start: customStart.value,
+        end: customEnd.value,
+    });
+};
+
+const applyFilter = (params) => {
+    isChangingPeriod.value = true;
+    router.get('/dashboard/monitoring', params, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        onFinish: () => {
+            isChangingPeriod.value = false;
+        },
+    });
+};
+
+const shouldShowXLabel = (idx, total) => {
+    if (total <= 14) return true;
+    if (total <= 25) return idx % 3 === 0 || idx === total - 1;
+    if (total <= 40) return idx % 4 === 0 || idx === total - 1;
+    return idx % 6 === 0 || idx === total - 1;
+};
 
 let pollTimer = null;
 
@@ -78,8 +158,26 @@ const chartPoints = computed(() => {
 
     const innerW = chartWidth - chartPadding.left - chartPadding.right;
     const innerH = chartHeight - chartPadding.top - chartPadding.bottom;
-    const stepX = innerW / Math.max(data.length - 1, 1);
     const maxVal = maxTrendValue.value;
+
+    if (data.length === 1) {
+        const val = data[0][activeChartMetric.value] || 0;
+        const x = chartPadding.left + innerW / 2;
+        const y = chartPadding.top + innerH - (val / maxVal) * innerH;
+        return [{
+            x,
+            y,
+            val,
+            label: data[0].label,
+            day: data[0].day,
+            date: data[0].date,
+            isToday: data[0].isToday,
+            pageviews: data[0].pageviews,
+            unique: data[0].unique,
+        }];
+    }
+
+    const stepX = innerW / Math.max(data.length - 1, 1);
 
     return data.map((item, idx) => {
         const val = item[activeChartMetric.value] || 0;
@@ -117,7 +215,7 @@ const linePath = computed(() => {
 
 const areaPath = computed(() => {
     const pts = chartPoints.value;
-    if (!pts.length) return '';
+    if (pts.length <= 1) return '';
     const bottomY = chartHeight - chartPadding.bottom;
     const firstX = pts[0].x;
     const lastX = pts[pts.length - 1].x;
@@ -366,6 +464,178 @@ const getReferrerBadgeClass = (type) => {
             </div>
         </section>
 
+        <!-- ── Filter Periode & Analisis Rentang Waktu ── -->
+        <section class="period-filter-section mb-6" aria-label="Filter Periode Analisis">
+            <div class="m3-table-card period-card">
+                <div class="period-card-header">
+                    <div class="d-flex align-center ga-2.5 flex-wrap">
+                        <div class="header-icon-box" style="background: #ecfdf5; color: #006837;">
+                            <v-icon size="20">mdi-calendar-clock</v-icon>
+                        </div>
+                        <div>
+                            <div class="d-flex align-center ga-2">
+                                <h2 class="period-section-title">Filter Periode Analisis</h2>
+                                <span v-if="isChangingPeriod" class="period-loading-tag">
+                                    <v-progress-circular indeterminate size="12" width="2" color="#006837" class="mr-1" />
+                                    Memuat data...
+                                </span>
+                            </div>
+                            <p class="period-section-subtitle">
+                                Pilih rentang waktu untuk memfilter grafik tren, performa konten, dan zonasi pengunjung
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Range Badge & Compare Tag -->
+                    <div class="period-info-badge">
+                        <v-icon size="14" class="text-emerald-700 mr-1.5">mdi-calendar-range</v-icon>
+                        <span class="font-bold text-slate-800">{{ period.rangeLabel || period.label }}</span>
+                        <span class="period-compare-pill">Bandingkan: {{ period.compareLabel }}</span>
+                    </div>
+                </div>
+
+                <!-- Quick Period Filter Pills -->
+                <div class="period-pills-bar">
+                    <button
+                        v-for="opt in (period.options || [])"
+                        :key="opt.key"
+                        type="button"
+                        class="period-pill-btn"
+                        :class="{ 'period-pill-btn--active': selectedPeriod === opt.key }"
+                        :disabled="isChangingPeriod"
+                        @click="changePeriod(opt.key)"
+                    >
+                        <span>{{ opt.label }}</span>
+                    </button>
+                </div>
+
+                <!-- Custom Date Range Expandable Bar -->
+                <transition name="expand">
+                    <div v-if="showCustomPicker" class="custom-range-bar">
+                        <div class="d-flex align-center ga-2">
+                            <v-icon size="16" color="#006837">mdi-tune-variant</v-icon>
+                            <span class="text-xs font-semibold text-slate-700">Tentukan Rentang Tanggal Kustom:</span>
+                        </div>
+
+                        <div class="custom-range-inputs">
+                            <div class="date-input-group">
+                                <label for="start-date" class="date-label">Dari</label>
+                                <input
+                                    id="start-date"
+                                    v-model="customStart"
+                                    type="date"
+                                    class="m3-date-input"
+                                    :max="customEnd || undefined"
+                                />
+                            </div>
+
+                            <span class="date-sep">—</span>
+
+                            <div class="date-input-group">
+                                <label for="end-date" class="date-label">Sampai</label>
+                                <input
+                                    id="end-date"
+                                    v-model="customEnd"
+                                    type="date"
+                                    class="m3-date-input"
+                                    :min="customStart || undefined"
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                class="m3-btn-apply"
+                                :disabled="!customStart || !customEnd || isChangingPeriod"
+                                @click="applyCustomRange"
+                            >
+                                <v-icon size="14" class="mr-1">mdi-filter-check</v-icon>
+                                <span>Terapkan Rentang</span>
+                            </button>
+                        </div>
+                    </div>
+                </transition>
+
+                <!-- Comparative Metrics Banner (Performa Periode Terpilih) -->
+                <div class="period-metrics-banner">
+                    <!-- Metric 1: Tayangan Periode Ini -->
+                    <div class="period-metric-col">
+                        <div class="metric-col-top">
+                            <span class="metric-col-label">TAYANGAN HALAMAN</span>
+                            <span
+                                :class="[
+                                    'growth-pill',
+                                    periodMetrics.pageviewsGrowth > 0 ? 'growth--up' : (periodMetrics.pageviewsGrowth < 0 ? 'growth--down' : 'growth--neutral')
+                                ]"
+                            >
+                                <v-icon size="11">
+                                    {{ periodMetrics.pageviewsGrowth > 0 ? 'mdi-arrow-up-bold' : (periodMetrics.pageviewsGrowth < 0 ? 'mdi-arrow-down-bold' : 'mdi-minus') }}
+                                </v-icon>
+                                {{ periodMetrics.pageviewsGrowth > 0 ? '+' : '' }}{{ periodMetrics.pageviewsGrowth }}%
+                            </span>
+                        </div>
+                        <div class="metric-col-val text-slate-900">
+                            {{ formatNumber(periodMetrics.pageviews) }}
+                        </div>
+                        <div class="metric-col-sub">
+                            vs <strong>{{ formatNumber(periodMetrics.prevPageviews) }}</strong> ({{ period.compareLabel }})
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Pengunjung Unik Periode Ini -->
+                    <div class="period-metric-col">
+                        <div class="metric-col-top">
+                            <span class="metric-col-label">PENGUNJUNG UNIK</span>
+                            <span
+                                :class="[
+                                    'growth-pill',
+                                    periodMetrics.uniqueGrowth > 0 ? 'growth--up' : (periodMetrics.uniqueGrowth < 0 ? 'growth--down' : 'growth--neutral')
+                                ]"
+                            >
+                                <v-icon size="11">
+                                    {{ periodMetrics.uniqueGrowth > 0 ? 'mdi-arrow-up-bold' : (periodMetrics.uniqueGrowth < 0 ? 'mdi-arrow-down-bold' : 'mdi-minus') }}
+                                </v-icon>
+                                {{ periodMetrics.uniqueGrowth > 0 ? '+' : '' }}{{ periodMetrics.uniqueGrowth }}%
+                            </span>
+                        </div>
+                        <div class="metric-col-val text-emerald-800">
+                            {{ formatNumber(periodMetrics.unique) }}
+                        </div>
+                        <div class="metric-col-sub">
+                            vs <strong>{{ formatNumber(periodMetrics.prevUnique) }}</strong> ({{ period.compareLabel }})
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Rata-Rata Tayangan / Hari -->
+                    <div class="period-metric-col">
+                        <div class="metric-col-top">
+                            <span class="metric-col-label">RATA-RATA / HARI</span>
+                            <v-icon size="15" color="#0284c7">mdi-chart-line</v-icon>
+                        </div>
+                        <div class="metric-col-val text-sky-800">
+                            {{ formatNumber(periodMetrics.avgPerDay) }}
+                        </div>
+                        <div class="metric-col-sub">
+                            Tayangan rata-rata per hari aktif
+                        </div>
+                    </div>
+
+                    <!-- Metric 4: Kedalaman Baca (Pages / Visitor) -->
+                    <div class="period-metric-col">
+                        <div class="metric-col-top">
+                            <span class="metric-col-label">HALAMAN / PEMBACA</span>
+                            <v-icon size="15" color="#7c3aed">mdi-book-open-page-variant-outline</v-icon>
+                        </div>
+                        <div class="metric-col-val text-purple-800">
+                            {{ periodMetrics.pagesPerVisitor }}
+                        </div>
+                        <div class="metric-col-sub">
+                            Rasio tayangan per pengunjung unik
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ── Row: Trend Chart & Hourly Distribution ── -->
         <div class="analytics-row mb-6">
             <!-- 14 Days Interactive Trend Chart Card -->
@@ -375,11 +645,11 @@ const getReferrerBadgeClass = (type) => {
                         <div class="d-flex align-center ga-2 mb-1">
                             <span class="m3-header-badge">
                                 <v-icon size="13" class="mr-1 text-emerald-700">mdi-chart-areaspline</v-icon>
-                                Tren 14 Hari Terakhir
+                                Tren Kunjungan · {{ period.label }}
                             </span>
                         </div>
-                        <h2 class="m3-table-title">Dinamika Kunjungan Harian</h2>
-                        <p class="m3-table-subtitle">Grafik tayangan halaman dan pembaca unik portal</p>
+                        <h2 class="m3-table-title">Dinamika Kunjungan {{ period.label }}</h2>
+                        <p class="m3-table-subtitle">Rentang {{ period.rangeLabel }} (Tampilan {{ period.granularity === 'hour' ? 'Per Jam' : (period.granularity === 'day' ? 'Per Hari' : 'Per Bulan') }})</p>
                     </div>
 
                     <!-- Metric Toggle Segmented Pill -->
@@ -462,14 +732,15 @@ const getReferrerBadgeClass = (type) => {
 
                     <!-- Bottom X-Axis Labels -->
                     <div class="chart-x-labels">
-                        <span
-                            v-for="(pt, idx) in chartPoints"
-                            :key="idx"
-                            :class="['x-label', { 'x-label--today': pt.isToday }]"
-                            :style="{ left: `${(pt.x / chartWidth) * 100}%` }"
-                        >
-                            {{ pt.day }}
-                        </span>
+                        <template v-for="(pt, idx) in chartPoints" :key="idx">
+                            <span
+                                v-if="shouldShowXLabel(idx, chartPoints.length)"
+                                :class="['x-label', { 'x-label--today': pt.isToday }]"
+                                :style="{ left: `${(pt.x / chartWidth) * 100}%` }"
+                            >
+                                {{ pt.day }}
+                            </span>
+                        </template>
                     </div>
 
                     <!-- Interactive Tooltip -->
@@ -503,8 +774,8 @@ const getReferrerBadgeClass = (type) => {
                                 Distribusi Jam
                             </span>
                         </div>
-                        <h2 class="m3-table-title">Aktivitas Hari Ini</h2>
-                        <p class="m3-table-subtitle">Jam ramai pembaca (00:00 - 23:00)</p>
+                        <h2 class="m3-table-title">Pola Jam Kunjungan</h2>
+                        <p class="m3-table-subtitle">Akumulasi jam ramai (00:00 - 23:00) pada {{ period.label }}</p>
                     </div>
                 </div>
 
@@ -552,7 +823,7 @@ const getReferrerBadgeClass = (type) => {
                             </span>
                         </div>
                         <h2 class="m3-table-title">Halaman &amp; Berita Terpopuler</h2>
-                        <p class="m3-table-subtitle">30 hari terakhir berdasarkan akumulasi pembaca</p>
+                        <p class="m3-table-subtitle">Periode {{ period.label }} ({{ period.rangeLabel }}) berdasarkan akumulasi pembaca</p>
                     </div>
                 </div>
 
@@ -615,7 +886,7 @@ const getReferrerBadgeClass = (type) => {
                             </div>
                             <div>
                                 <h3 class="breakdown-title">Perangkat Pengunjung</h3>
-                                <p class="breakdown-subtitle">Proporsi Mobile vs Desktop</p>
+                                <p class="breakdown-subtitle">Proporsi selama {{ period.label }}</p>
                             </div>
                         </div>
                     </div>
@@ -692,7 +963,7 @@ const getReferrerBadgeClass = (type) => {
                             </div>
                             <div>
                                 <h3 class="breakdown-title">Sumber Trafik</h3>
-                                <p class="breakdown-subtitle">Asal rujukan pembaca portal</p>
+                                <p class="breakdown-subtitle">Asal rujukan selama {{ period.label }}</p>
                             </div>
                         </div>
                     </div>
@@ -728,7 +999,7 @@ const getReferrerBadgeClass = (type) => {
                         </span>
                     </div>
                     <h2 class="m3-table-title">Zonasi Asal Pengunjung &amp; Wilayah</h2>
-                    <p class="m3-table-subtitle">Sebaran geografis pembaca dakwah PCM Simo berdasarkan provinsi, negara, dan kota</p>
+                    <p class="m3-table-subtitle">Sebaran geografis selama {{ period.label }} ({{ period.rangeLabel }})</p>
                 </div>
                 <div class="d-flex align-center ga-2 flex-wrap">
                     <span class="m3-stat-tag">
@@ -1831,5 +2102,286 @@ const getReferrerBadgeClass = (type) => {
     border-color: #cbd5e1;
     background: #fcfcfd;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Period Filter Section & Banner ── */
+.period-filter-section {
+    position: relative;
+}
+
+.period-card {
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.period-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 24px 16px;
+    background: #ffffff;
+}
+
+@media (min-width: 768px) {
+    .period-card-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.period-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.period-section-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin: 2px 0 0 0;
+}
+
+.period-loading-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #006837;
+    background: #ecfdf5;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    border: 1px solid #a7f3d0;
+}
+
+.period-info-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.period-compare-pill {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+/* Quick Period Filter Pills */
+.period-pills-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 12px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.period-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.period-pill-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.period-pill-btn--active {
+    background: #006837 !important;
+    color: #ffffff !important;
+    border-color: #006837 !important;
+    box-shadow: 0 2px 8px rgba(0, 104, 55, 0.28);
+}
+
+.period-pill-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Custom Range Expandable Bar */
+.custom-range-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 24px;
+    background: #ecfdf5;
+    border-bottom: 1px solid #a7f3d0;
+}
+
+@media (min-width: 640px) {
+    .custom-range-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.custom-range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.date-input-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #065f46;
+}
+
+.m3-date-input {
+    background: #ffffff;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #0f172a;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.15s ease;
+}
+
+.m3-date-input:focus {
+    border-color: #006837;
+    box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.15);
+}
+
+.date-sep {
+    color: #059669;
+    font-weight: 700;
+}
+
+.m3-btn-apply {
+    display: inline-flex;
+    align-items: center;
+    background: #006837;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.m3-btn-apply:hover {
+    background: #00502a;
+}
+
+.m3-btn-apply:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Comparative Metrics Banner */
+.period-metrics-banner {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1px;
+    background: #f1f5f9;
+}
+
+@media (min-width: 640px) {
+    .period-metrics-banner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .period-metrics-banner {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.period-metric-col {
+    background: #ffffff;
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-col-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.metric-col-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.metric-col-val {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.metric-col-sub {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.growth--neutral {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+/* Expand Transition */
+.expand-enter-active,
+.expand-leave-active {
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    max-height: 120px;
+    opacity: 1;
+    overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 </style>
