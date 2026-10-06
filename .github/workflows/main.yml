@@ -94,7 +94,7 @@ jobs:
               -C "$APP_DIR" .
 
           cd "$APP_DIR"
-          php artisan down --retry=60
+          php artisan down --render="errors.503" --retry=30 --refresh=15 2>/dev/null || php artisan down --retry=60
           REMOTE
 
       - name: Kirim kode dan hasil build
