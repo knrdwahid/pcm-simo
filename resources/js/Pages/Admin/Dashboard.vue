@@ -134,19 +134,19 @@ const statCards = [
                 <div class="m3-header-actions">
                     <Link href="/dashboard/monitoring" class="text-decoration-none">
                         <button class="m3-btn-tonal">
-                            <v-icon size="18" class="mr-2 text-emerald-700">mdi-chart-timeline-variant-shimmer</v-icon>
+                            <v-icon size="18" class="text-emerald-700">mdi-chart-timeline-variant-shimmer</v-icon>
                             <span>Monitoring Pengunjung</span>
                         </button>
                     </Link>
                     <Link href="/dashboard/aum" class="text-decoration-none">
                         <button class="m3-btn-tonal">
-                            <v-icon size="18" class="mr-2 text-emerald-700">mdi-domain</v-icon>
+                            <v-icon size="18" class="text-emerald-700">mdi-domain</v-icon>
                             <span>Kelola AUM &amp; Ortom</span>
                         </button>
                     </Link>
                     <Link href="/dashboard/news/create" class="text-decoration-none">
                         <button class="m3-fab-extended">
-                            <v-icon size="20" class="mr-2">mdi-plus</v-icon>
+                            <v-icon size="19">mdi-plus</v-icon>
                             <span>Tulis Berita Baru</span>
                         </button>
                     </Link>
@@ -341,15 +341,21 @@ const statCards = [
 .m3-header-main {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 960px) {
     .m3-header-main {
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
+        gap: 20px;
     }
+}
+
+.m3-header-titles {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .m3-header-badge {
@@ -384,7 +390,7 @@ const statCards = [
     font-size: 13.5px;
     color: #64748b;
     margin: 0;
-    max-width: 640px;
+    max-width: 520px;
     line-height: 1.5;
 }
 
@@ -395,33 +401,47 @@ const statCards = [
     flex-wrap: wrap;
 }
 
+@media (min-width: 960px) {
+    .m3-header-actions {
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+        justify-content: flex-end;
+    }
+}
+
 .m3-fab-extended {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     background: linear-gradient(135deg, #006837 0%, #008744 100%);
     color: #ffffff;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 600;
-    padding: 11px 22px;
+    height: 40px;
+    padding: 0 20px;
     border-radius: 9999px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.3);
+    box-shadow: 0 4px 14px rgba(0, 104, 55, 0.28);
     transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 .m3-fab-extended:hover {
     background: linear-gradient(135deg, #00502a 0%, #006837 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(0, 104, 55, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 104, 55, 0.38);
 }
 
 .m3-btn-tonal {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 18px;
+    height: 40px;
+    padding: 0 16px;
     border-radius: 9999px;
     border: 1px solid #e2e8f0;
     background: #ffffff;
@@ -431,6 +451,8 @@ const statCards = [
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: all 0.2s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
 }
 
 .m3-btn-tonal:hover {
