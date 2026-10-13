@@ -17,6 +17,7 @@ Route::get('/organisasi', function () {
     return redirect()->route('organization.profile');
 });
 Route::get('/berita/{slug}', [PublicController::class, 'showArticle'])->name('article.show');
+Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('sitemap');
 
 // Fallback untuk serving file storage jika symlink cPanel hosting bermasalah / nonaktif
 Route::get('/storage/{path}', function (string $path) {

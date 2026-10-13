@@ -323,4 +323,62 @@ class PublicController extends Controller
 
         return Official::orderBy('sort_order')->get();
     }
+
+    /**
+     * Generate dynamic sitemap.xml for search engines (Googlebot, Bing, etc.)
+     */
+    public function sitemap(): \Illuminate\Http\Response
+    {
+        $appUrl = config('app.url');
+        if ($appUrl && ! str_contains($appUrl, 'localhost')) {
+            $baseUrl = rtrim($appUrl, '/');
+        } else {
+            $currentHost = request()->getSchemeAndHttpHost();
+            $baseUrl = (str_contains($currentHost, 'localhost') || ! str_contains($currentHost, '.'))
+                ? 'https://muhammadiyahsimo.or.id'
+                : rtrim($currentHost, '/');
+        }
+
+        $articles = Article::where('status', 'published')
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now())
+            ->latest('published_at')
+            ->get(['slug', 'updated_at', 'published_at']);
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+        // 1. Beranda
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . htmlspecialchars($baseUrl) . "/</loc>\n";
+        $xml .= "    <changefreq>daily</changefreq>\n";
+        $xml .= "    <priority>1.0</priority>\n";
+        $xml .= "  </url>\n";
+
+        // 2. Profil Organisasi
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . htmlspecialchars($baseUrl . '/profil-organisasi') . "</loc>\n";
+        $xml .= "    <changefreq>monthly</changefreq>\n";
+        $xml .= "    <priority>0.8</priority>\n";
+        $xml .= "  </url>\n";
+
+        // 3. Warta Berita & Artikel
+        foreach ($articles as $article) {
+            $timestamp = $article->updated_at ?? $article->published_at;
+            $lastmod = $timestamp ? $timestamp->toAtomString() : now()->toAtomString();
+            $xml .= "  <url>\n";
+            $xml .= "    <loc>" . htmlspecialchars($baseUrl . '/berita/' . $article->slug) . "</loc>\n";
+            $xml .= "    <lastmod>" . $lastmod . "</lastmod>\n";
+            $xml .= "    <changefreq>weekly</changefreq>\n";
+            $xml .= "    <priority>0.7</priority>\n";
+            $xml .= "  </url>\n";
+        }
+
+        $xml .= '</urlset>';
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=utf-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
+    }
 }

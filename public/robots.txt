@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /dashboard/
+Disallow: /login
+
+Sitemap: https://muhammadiyahsimo.or.id/sitemap.xml

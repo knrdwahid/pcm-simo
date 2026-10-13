@@ -136,7 +136,26 @@ const getTypeBadge = (type) => {
 </script>
 
 <template>
-    <Head title="Profil Organisasi & Pimpinan | PCM Simo" />
+    <Head>
+        <title>Profil Organisasi & Pimpinan | PCM Simo Boyolali</title>
+        <meta name="description" content="Profil lengkap Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali. Struktur pengurus periode 2022-2027, majelis, lembaga, organisasi otonom (Ortom), dan amal usaha (AUM)." />
+        <meta name="keywords" content="Profil PCM Simo, Pengurus Muhammadiyah Simo, Ketua PCM Simo, Majelis Muhammadiyah Simo, Aisyiyah Simo, Pemuda Muhammadiyah Simo, Boyolali" />
+        
+        <!-- Open Graph / WhatsApp / Facebook Preview -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://muhammadiyahsimo.or.id/profil-organisasi" />
+        <meta property="og:title" content="Profil Organisasi & Pimpinan | PCM Simo Boyolali" />
+        <meta property="og:description" content="Profil lengkap Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali. Struktur pengurus periode 2022-2027, majelis, lembaga, ortom, dan amal usaha." />
+        <meta property="og:image" content="https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Profil Organisasi & Pimpinan | PCM Simo Boyolali" />
+        <meta name="twitter:description" content="Profil lengkap Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali." />
+        <meta name="twitter:image" content="https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png" />
+
+        <link rel="canonical" href="https://muhammadiyahsimo.or.id/profil-organisasi" />
+    </Head>
 
     <PublicLayout>
         <div class="org-wrapper">

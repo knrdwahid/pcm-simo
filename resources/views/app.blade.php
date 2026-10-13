@@ -6,6 +6,17 @@
     <title inertia>{{ config('app.name', 'PCM Simo') }}</title>
     <link rel="icon" type="image/png" href="/images/logo-muhammadiyah-warna.png">
 
+    <!-- SEO Meta Tags & Social Sharing Fallbacks -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Pimpinan Cabang Muhammadiyah Simo">
+    <meta property="og:site_name" content="PCM Simo">
+    <meta property="og:locale" content="id_ID">
+
+    <!-- Google Site Verification (Dapat diisi melalui GOOGLE_SITE_VERIFICATION di file .env) -->
+    @if(env('GOOGLE_SITE_VERIFICATION'))
+    <meta name="google-site-verification" content="{{ env('GOOGLE_SITE_VERIFICATION') }}">
+    @endif
+
     <!-- Google Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

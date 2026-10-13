@@ -96,11 +96,77 @@ const copyShareLink = async () => {
         // fallback
     }
 };
+
+// SEO & Social Meta
+const pageTitle = computed(() => `${props.article.title} - Portal Resmi PCM Simo`);
+const pageDescription = computed(() => {
+    if (props.article.excerpt && props.article.excerpt.trim()) {
+        return props.article.excerpt.trim();
+    }
+    return props.article.title;
+});
+const articleCanonical = computed(() => {
+    return `https://muhammadiyahsimo.or.id/berita/${props.article.slug}`;
+});
+const articleImageUrl = computed(() => {
+    if (!props.article.cover_image) {
+        return 'https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png';
+    }
+    if (props.article.cover_image.startsWith('http')) {
+        return props.article.cover_image;
+    }
+    return `https://muhammadiyahsimo.or.id/storage/${props.article.cover_image}`;
+});
+const schemaArticle = computed(() => JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    'headline': props.article.title,
+    'description': pageDescription.value,
+    'image': [articleImageUrl.value],
+    'datePublished': props.article.published_at || props.article.created_at,
+    'dateModified': props.article.updated_at || props.article.published_at,
+    'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id': articleCanonical.value
+    },
+    'author': [{
+        '@type': 'Person',
+        'name': props.article.author?.name || 'Redaksi PCM Simo'
+    }],
+    'publisher': {
+        '@type': 'Organization',
+        'name': 'Pimpinan Cabang Muhammadiyah Simo',
+        'logo': {
+            '@type': 'ImageObject',
+            'url': 'https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png'
+        }
+    }
+}));
 </script>
 
 <template>
-    <Head :title="`${article.title} - Portal Resmi PCM Simo`">
-        <meta name="description" :content="article.excerpt || article.title" />
+    <Head>
+        <title>{{ pageTitle }}</title>
+        <meta name="description" :content="pageDescription" />
+        
+        <!-- Open Graph / WhatsApp / Facebook Preview -->
+        <meta property="og:type" content="article" />
+        <meta property="og:url" :content="articleCanonical" />
+        <meta property="og:title" :content="pageTitle" />
+        <meta property="og:description" :content="pageDescription" />
+        <meta property="og:image" :content="articleImageUrl" />
+        <meta property="article:published_time" :content="article.published_at" />
+        <meta property="article:author" :content="article.author?.name || 'Redaksi PCM Simo'" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" :content="pageTitle" />
+        <meta name="twitter:description" :content="pageDescription" />
+        <meta name="twitter:image" :content="articleImageUrl" />
+
+        <link rel="canonical" :href="articleCanonical" />
+
+        <component :is="'script'" type="application/ld+json" v-html="schemaArticle" />
     </Head>
 
     <PublicLayout>

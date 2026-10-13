@@ -201,10 +201,49 @@ const latestArticles = computed(() => {
 const newsflashList = computed(() => {
     return props.articles.slice(0, 5).map(a => a.title);
 });
+
+// Structured Data (JSON-LD Schema.org) untuk Google
+const organizationSchema = computed(() => JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'NGO',
+    'name': 'Pimpinan Cabang Muhammadiyah Simo',
+    'alternateName': ['PCM Simo', 'Muhammadiyah Simo'],
+    'url': 'https://muhammadiyahsimo.or.id',
+    'logo': 'https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png',
+    'image': 'https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png',
+    'description': 'Portal Resmi Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali. Informasi dakwah, pendidikan, kesehatan, sosial, warta berita kegiatan persyarikatan, dan jadwal shalat.',
+    'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': 'Simo',
+        'addressRegion': 'Boyolali, Jawa Tengah',
+        'addressCountry': 'ID'
+    }
+}));
 </script>
 
 <template>
-    <Head title="Portal Resmi | PCM Simo" />
+    <Head>
+        <title>Portal Resmi PCM Simo | Pimpinan Cabang Muhammadiyah Simo Boyolali</title>
+        <meta name="description" content="Portal Resmi Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali. Menyajikan warta kegiatan, dakwah, profil pimpinan, amal usaha (AUM), dan jadwal shalat." />
+        <meta name="keywords" content="PCM Simo, Muhammadiyah Simo, Pimpinan Cabang Muhammadiyah Simo, Muhammadiyah Boyolali, AUM Simo, Lazismu Simo, Berita Simo, Boyolali" />
+        
+        <!-- Open Graph / WhatsApp / Facebook Preview -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://muhammadiyahsimo.or.id" />
+        <meta property="og:title" content="Portal Resmi PCM Simo | Pimpinan Cabang Muhammadiyah Simo Boyolali" />
+        <meta property="og:description" content="Portal Resmi Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali. Informasi persyarikatan, dakwah, pendidikan, kesehatan, dan warta kegiatan umat." />
+        <meta property="og:image" content="https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png" />
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Portal Resmi PCM Simo | Pimpinan Cabang Muhammadiyah Simo" />
+        <meta name="twitter:description" content="Portal Resmi Pimpinan Cabang Muhammadiyah Simo, Kabupaten Boyolali." />
+        <meta name="twitter:image" content="https://muhammadiyahsimo.or.id/images/logo-muhammadiyah-warna.png" />
+
+        <link rel="canonical" href="https://muhammadiyahsimo.or.id" />
+
+        <component :is="'script'" type="application/ld+json" v-html="organizationSchema" />
+    </Head>
 
     <PublicLayout :newsflash-items="newsflashList">
         <div class="welcome-container">
