@@ -75,6 +75,7 @@ class NewsController extends Controller
             'arabic_quote' => ['nullable', 'string'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:published,draft'],
+            'published_at' => ['nullable', 'date'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -90,8 +91,8 @@ class NewsController extends Controller
         ]);
 
         $validated['user_id'] = auth()->id();
-        // Slug generation is handled by Article model boot event
-        if ($validated['status'] === 'published') {
+        // Use user-provided published_at, or set to now() when publishing
+        if ($validated['status'] === 'published' && empty($validated['published_at'])) {
             $validated['published_at'] = now();
         }
 
@@ -123,6 +124,7 @@ class NewsController extends Controller
             'arabic_quote' => ['nullable', 'string'],
             'is_featured' => ['boolean'],
             'status' => ['required', 'in:published,draft'],
+            'published_at' => ['nullable', 'date'],
         ]);
 
         if ($request->hasFile('image')) {
@@ -143,7 +145,8 @@ class NewsController extends Controller
             'a', 'img', 'figure', 'figcaption', 'blockquote', 'hr', 'div', 'span',
         ]);
 
-        if ($news->status !== 'published' && $validated['status'] === 'published' && ! $news->published_at) {
+        // Use user-provided published_at; fallback to now() on first publish
+        if ($validated['status'] === 'published' && empty($validated['published_at']) && ! $news->published_at) {
             $validated['published_at'] = now();
         }
 

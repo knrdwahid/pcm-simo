@@ -3,7 +3,7 @@ import { showAlert } from '@/Utils/sweetalert';
 import RichEditor from '@/Components/RichEditor.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 defineOptions({ layout: AdminLayout });
 
@@ -12,6 +12,22 @@ const props = defineProps({
     article: { type: Object, default: null },
     categories: { type: Array, default: () => [] },
 });
+
+// Helper: format a date to 'YYYY-MM-DDTHH:mm' for datetime-local input
+const formatDatetimeLocal = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+// Helper: get current datetime as 'YYYY-MM-DDTHH:mm'
+const nowDatetimeLocal = () => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 const form = useForm({
     title: props.article?.title || '',
@@ -22,7 +38,30 @@ const form = useForm({
     image_url: props.article?.image_url || '',
     is_featured: Boolean(props.article?.is_featured || false),
     status: props.article?.status || 'published',
+    published_at: props.article?.published_at
+        ? formatDatetimeLocal(props.article.published_at)
+        : nowDatetimeLocal(),
 });
+
+// Human-readable display of the chosen date
+const publishDateLabel = computed(() => {
+    if (!form.published_at) return 'Belum ditentukan';
+    const d = new Date(form.published_at);
+    if (isNaN(d.getTime())) return 'Format tidak valid';
+    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · ${pad(d.getHours())}:${pad(d.getMinutes())} WIB`;
+});
+
+const isScheduledFuture = computed(() => {
+    if (!form.published_at) return false;
+    return new Date(form.published_at) > new Date();
+});
+
+const setPublishNow = () => {
+    form.published_at = nowDatetimeLocal();
+};
 
 const imagePreview = ref(props.article?.image_url || '');
 const fileInput = ref(null);
@@ -298,6 +337,42 @@ const submit = (overrideStatus = null) => {
                                 </button>
                             </div>
                             <p v-if="form.errors.status" class="field-error-message">{{ form.errors.status }}</p>
+                        </div>
+
+                        <!-- Tanggal Publikasi -->
+                        <div class="settings-group">
+                            <label class="sidebar-field-label">
+                                <v-icon size="14" class="mr-1" color="#475569">mdi-calendar-clock-outline</v-icon>
+                                Tanggal & Waktu Publikasi
+                            </label>
+                            <div class="publish-date-input-wrapper">
+                                <input
+                                    id="news-published-at"
+                                    v-model="form.published_at"
+                                    type="datetime-local"
+                                    class="publish-date-input"
+                                />
+                                <button
+                                    type="button"
+                                    class="publish-now-btn"
+                                    @click="setPublishNow"
+                                    title="Atur ke waktu sekarang"
+                                >
+                                    <v-icon size="14" class="mr-1">mdi-clock-fast</v-icon>
+                                    Sekarang
+                                </button>
+                            </div>
+                            <div class="publish-date-preview">
+                                <v-icon size="13" :color="isScheduledFuture ? '#d97706' : '#006837'" class="mr-1.5 flex-shrink-0">{{ isScheduledFuture ? 'mdi-clock-outline' : 'mdi-check-circle-outline' }}</v-icon>
+                                <span :class="isScheduledFuture ? 'text-amber-700' : 'text-emerald-700'">
+                                    {{ isScheduledFuture ? 'Dijadwalkan: ' : '' }}{{ publishDateLabel }}
+                                </span>
+                            </div>
+                            <p v-if="isScheduledFuture" class="publish-schedule-note">
+                                <v-icon size="12" color="#d97706" class="mr-1">mdi-information-outline</v-icon>
+                                Berita akan dipublikasikan sesuai tanggal yang dipilih.
+                            </p>
+                            <p v-if="form.errors.published_at" class="field-error-message">{{ form.errors.published_at }}</p>
                         </div>
 
                         <!-- Custom Rubrik / Kategori Dropdown (NO native browser select!) -->
@@ -1239,5 +1314,81 @@ const submit = (overrideStatus = null) => {
     font-size: 11px;
     color: #64748b;
     line-height: 1.4;
+}
+
+/* ── Publish Date Picker ── */
+.publish-date-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.publish-date-input {
+    flex: 1;
+    background: #fbfcfd;
+    border: 1px solid #dcdfe4;
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: #0f172a;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02) inset;
+    min-width: 0;
+}
+
+.publish-date-input:focus {
+    background: #ffffff;
+    border-color: #006837;
+    box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.12);
+}
+
+.publish-now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0fdf4;
+    color: #006837;
+    border: 1px solid #bbf7d0;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.publish-now-btn:hover {
+    background: #dcfce7;
+    border-color: #86efac;
+    transform: translateY(-1px);
+}
+
+.publish-date-preview {
+    display: flex;
+    align-items: center;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #475569;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.publish-schedule-note {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: #d97706;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-top: 6px;
+    margin-bottom: 0;
 }
 </style>
