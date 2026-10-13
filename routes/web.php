@@ -18,6 +18,11 @@ Route::get('/organisasi', function () {
 });
 Route::get('/berita/{slug}', [PublicController::class, 'showArticle'])->name('article.show');
 Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('sitemap');
+Route::get('/google10f6f4df0cf9cf78.html', function () {
+    return response('google-site-verification: google10f6f4df0cf9cf78.html', 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+});
 
 // Fallback untuk serving file storage jika symlink cPanel hosting bermasalah / nonaktif
 Route::get('/storage/{path}', function (string $path) {
